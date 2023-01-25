@@ -10,9 +10,12 @@
 [submodule "vendor/libpng"]
 	path = vendor/libpng
 	url = https://github.com/glennrp/libpng.git
+<<<<<<< HEAD
 [submodule "vendor/ducktape"]
 	path = vendor/ducktape
 	url = https://github.com/svaarala/duktape-releases.git
+=======
+>>>>>>> 560515164d28185ce2055c0388eac7cc8e5918f0
 [submodule "vendor/argparse"]
 	path = vendor/argparse
 	url = https://github.com/cofyc/argparse.git
@@ -28,3 +31,9 @@
 [submodule "vendor/libws"]
 	path = vendor/libws
 	url = https://github.com/Nauja/libws.git
+<<<<<<< HEAD
+=======
+[submodule "vendor/duktape"]
+	path = vendor/duktape
+	url = https://github.com/svaarala/duktape-releases.git
+>>>>>>> 560515164d28185ce2055c0388eac7cc8e5918f0
