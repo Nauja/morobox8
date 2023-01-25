@@ -1,0 +1,30 @@
+[submodule "vendor/zlib"]
+	path = vendor/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "vendor/sdl2"]
+	path = vendor/sdl2
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "vendor/lua"]
+	path = vendor/lua
+	url = https://github.com/lua/lua.git
+[submodule "vendor/libpng"]
+	path = vendor/libpng
+	url = https://github.com/glennrp/libpng.git
+[submodule "vendor/argparse"]
+	path = vendor/argparse
+	url = https://github.com/cofyc/argparse.git
+[submodule "vendor/cmocka"]
+	path = vendor/cmocka
+	url = https://git.cryptomilk.org/projects/cmocka.git
+[submodule "vendor/libwebsockets"]
+	path = vendor/libwebsockets
+	url = https://github.com/warmcat/libwebsockets.git
+[submodule "vendor/libfs"]
+	path = vendor/libfs
+	url = https://github.com/Nauja/libfs.git
+[submodule "vendor/libws"]
+	path = vendor/libws
+	url = https://github.com/Nauja/libws.git
+[submodule "vendor/duktape"]
+	path = vendor/duktape
+	url = https://github.com/svaarala/duktape-releases.git
