@@ -10,9 +10,8 @@ extern "C"
 {
 #endif
 
-#define MORONET8_CART_PALETTE_SIZE 16
-#define MORONET8_CART_TILESET_SIZE 0x4000
-#define MORONET8_CART_CODE_SIZE 0x10000
+#define MORONET8_CART_MAGIC_CODE "MB8\n"
+#define MORONET8_CART_CODE_SIZE 0x3FFF
 
     enum moronet8_lang
     {
@@ -38,7 +37,7 @@ extern "C"
         /* Unique id of the chunk. */
         moronet8_u8 id;
         /* Type of chunk. */
-        enum moronet8_cart_chunk_type type;
+        moronet8_u8 type;
         /* Pointer to next chunk. */
         struct moronet8_cart_chunk *next;
     };
@@ -82,7 +81,7 @@ extern "C"
     struct moronet8_cart_code
     {
         /* Lang of the code. */
-        enum moronet8_lang lang;
+        moronet8_u8 lang;
         /* Code. */
         char text[MORONET8_CART_CODE_SIZE];
     };
@@ -96,26 +95,47 @@ extern "C"
         struct moronet8_cart_code code;
     };
 
-    /* Cart data. */
-    struct moronet8_cart
+    /* Cart header. */
+    struct moronet8_cart_header
     {
-        /* Main color palette. */
+        /* Magic code. */
+        char magic_code[4];
+        /* Number of chunks are data section. */
+        moronet8_u8 num_chunks;
+    };
+
+    /* Cart data. */
+    struct moronet8_cart_data
+    {
+        /* Color palette. */
         struct moronet8_cart_color palette[MORONET8_PALETTE_SIZE];
         /* Number of colors in the palette. */
         moronet8_u8 num_colors;
-        /* Pointer to tileset selected for font. */
-        struct moronet8_cart_tileset_chunk *font;
-        /* Pointer to selected tileset. */
-        struct moronet8_cart_tileset_chunk *tileset;
-        /* Pointer to selected code. */
-        struct moronet8_cart_code_chunk *code;
-        /* List of chunks. */
-        struct moronet8_cart_chunk *chunks;
+        /* Tileset section. */
+        struct moronet8_cart_tileset tileset;
+        /* Font section. */
+        struct moronet8_cart_tileset font;
+        /* Code section. */
+        struct moronet8_cart_code code;
+    };
+
+    /* Cart data. */
+    struct moronet8_cart
+    {
+        /* Cart header. */
+        struct moronet8_cart_header header;
+        /* Cart data. */
+        struct moronet8_cart_data data;
     };
 
     MORONET8_CREATE_H(moronet8_cart_code_chunk)
     MORONET8_CREATE_H(moronet8_cart_tileset_chunk)
+    MORONET8_CREATE_H(moronet8_cart_header)
+    MORONET8_CREATE_H(moronet8_cart_data)
     MORONET8_CREATE_H(moronet8_cart)
+
+    MORONET8_PUBLIC(size_t)
+    moronet8_cart_sizeof(void);
 
 #if MORONET8_FILESYSTEM
     MORONET8_PUBLIC(void)
@@ -129,25 +149,13 @@ extern "C"
 
     MORONET8_PUBLIC(void)
     moronet8_cart_dump_dir(struct moronet8_cart *cart, const char *path);
-#endif
 
     MORONET8_PUBLIC(void)
     moronet8_cart_load(struct moronet8_cart *cart, const void *buf, size_t size);
 
     MORONET8_PUBLIC(size_t)
     moronet8_cart_dump(struct moronet8_cart *cart, void *buf, size_t size);
-
-    MORONET8_PUBLIC(enum moronet8_lang)
-    moronet8_cart_get_lang(struct moronet8_cart *cart);
-
-    MORONET8_PUBLIC(void)
-    moronet8_cart_select_font(struct moronet8_cart *cart, moronet8_u8 id);
-
-    MORONET8_PUBLIC(void)
-    moronet8_cart_select_tileset(struct moronet8_cart *cart, moronet8_u8 id);
-
-    MORONET8_PUBLIC(void)
-    moronet8_cart_select_code(struct moronet8_cart *cart, moronet8_u8 id);
+#endif
 
 #ifdef __cplusplus
 }

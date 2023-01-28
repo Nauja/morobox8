@@ -30,6 +30,8 @@
 
 #include <assert.h>
 
+#include <stdarg.h>
+
 typedef struct moronet8_hooks moronet8_hooks;
 typedef struct moronet8_socket moronet8_socket;
 typedef enum moronet8_session_state moronet8_session_state;
@@ -42,8 +44,11 @@ typedef struct moronet8_api moronet8_api;
 typedef struct moronet8_cart moronet8_cart;
 typedef struct moronet8_cart_tileset moronet8_cart_tileset;
 typedef struct moronet8_cart_sprite moronet8_cart_sprite;
+typedef struct moronet8_cart_header moronet8_cart_header;
+typedef struct moronet8_cart_data moronet8_cart_data;
 typedef struct moronet8 moronet8;
 
+#ifdef HAVE_MALLOC
 #if defined(_MSC_VER)
 /* work around MSVC error C2322: '...' address of dllimport '...' is not static */
 static void *MORONET8_CDECL internal_malloc(size_t size)
@@ -59,10 +64,29 @@ static void MORONET8_CDECL internal_free(void *pointer)
 #define internal_malloc MORONET8_MALLOC
 #define internal_free MORONET8_FREE
 #endif
+#else
+#define internal_malloc NULL
+#define internal_free NULL
+#endif
+
+#ifdef HAVE_PRINTF
+#if defined(_MSC_VER)
+/* work around MSVC error C2322: '...' address of dllimport '...' is not static */
+static void MORONET8_CDECL internal_printf(const char *fmt, ...)
+{
+    printf(fmt, ...);
+}
+#else
+#define internal_printf MORONET8_PRINTF
+#endif
+#else
+#define internal_printf NULL
+#endif
 
 static moronet8_hooks moronet8_global_hooks = {
     internal_malloc,
     internal_free,
+    internal_printf,
     NULL,
     NULL,
     NULL,
@@ -78,6 +102,8 @@ moronet8_init_hooks(moronet8_hooks *hooks)
         moronet8_global_hooks.malloc_fn = hooks->malloc_fn;
     if (hooks->free_fn)
         moronet8_global_hooks.free_fn = hooks->free_fn;
+    if (hooks->printf_fn)
+        moronet8_global_hooks.printf_fn = hooks->printf_fn;
     if (hooks->host_session_fn)
         moronet8_global_hooks.host_session_fn = hooks->host_session_fn;
     if (hooks->join_session_fn)
@@ -99,6 +125,7 @@ moronet8_reset_hooks(void)
 {
     moronet8_global_hooks.malloc_fn = NULL;
     moronet8_global_hooks.free_fn = NULL;
+    moronet8_global_hooks.printf_fn = NULL;
     moronet8_global_hooks.host_session_fn = NULL;
     moronet8_global_hooks.join_session_fn = NULL;
     moronet8_global_hooks.delete_session_fn = NULL;
@@ -131,6 +158,18 @@ moronet8_free(void *p)
     if (moronet8_global_hooks.free_fn)
     {
         moronet8_global_hooks.free_fn(p);
+    }
+}
+
+MORONET8_PUBLIC(void)
+moronet8_printf(const char *fmt, ...)
+{
+    if (moronet8_global_hooks.printf_fn)
+    {
+        va_list args;
+        va_start(args, fmt);
+        moronet8_global_hooks.printf_fn(fmt, args);
+        va_end(args);
     }
 }
 
@@ -213,6 +252,7 @@ moronet8_session_poll(moronet8_session *session)
 
 #define _MORONET8_MALLOC moronet8_global_hooks.malloc_fn
 #define _MORONET8_FREE moronet8_global_hooks.free_fn
+#define _MORONET8_PRINTF moronet8_global_hooks.printf_fn
 
 #define MORONET8_TRUE 1
 #define MORONET8_FALSE 0
@@ -244,9 +284,9 @@ moronet8_api_init(moronet8_api *api, moronet8 *vm, moronet8_lang lang, moronet8_
 MORONET8_PUBLIC(void)
 moronet8_api_delete(moronet8_api *api)
 {
-    if (api->delete)
+    if (api->free)
     {
-        api->delete (api);
+        api->free(api);
     }
 
     memset(api, 0, sizeof(moronet8_api));
@@ -286,48 +326,55 @@ moronet8_init(moronet8 *vm)
 MORONET8_PUBLIC(void)
 moronet8_delete(moronet8 *vm)
 {
-    moronet8_api_delete(&vm->api);
+    moronet8_api_delete(&vm->cart_api);
     moronet8_api_delete(&vm->bios_api);
     _MORONET8_FREE(vm);
 }
 
-static moronet8 *moronet8_load_any(moronet8 *vm, moronet8_api *api, moronet8_cart *dst, moronet8_cart *src, moronet8_api_type type)
+MORONET8_PUBLIC(size_t)
+moronet8_sizeof(void)
 {
-    memcpy(dst, src, sizeof(moronet8_cart));
+    return sizeof(struct moronet8);
+}
+
+static moronet8 *moronet8_load_any(moronet8 *vm, moronet8_api *api, moronet8_cart_data *dst, moronet8_cart_data *src, moronet8_api_type type)
+{
+    memcpy(dst, src, sizeof(moronet8_cart_data));
     vm->cart_select = dst;
-    moronet8_cart_select_tileset(dst, 0);
-    moronet8_cart_select_code(dst, 0);
 
-    printf("code lang %d\n", dst->code->code.lang);
-    if (!moronet8_api_init(api, vm, dst->code->code.lang, type))
+    if (!moronet8_api_init(api, vm, dst->code.lang, type))
     {
         return NULL;
     }
 
-    if (!moronet8_api_load_string(api, dst->code->code.text, MORONET8_CART_CODE_SIZE))
+    if (!moronet8_api_load_string(api, &dst->code.text[0], MORONET8_CART_CODE_SIZE))
     {
+        if (dst == &vm->cart)
+            _MORONET8_PRINTF("failed loads");
         return NULL;
     }
 
+    if (dst == &vm->cart)
+        _MORONET8_PRINTF("api init");
     return vm;
 }
 
-static void moronet8_unload_any(moronet8_api *api, moronet8_cart *cart)
+static void moronet8_unload_any(moronet8_api *api, moronet8_cart_data *cart)
 {
     moronet8_api_delete(api);
-    memset(cart, 0, sizeof(moronet8_cart));
+    memset(cart, 0, sizeof(moronet8_cart_data));
 }
 
 MORONET8_PUBLIC(moronet8 *)
-moronet8_load_bios(moronet8 *vm, moronet8_cart *cart)
+moronet8_load_bios(moronet8 *vm, moronet8_cart_data *cart)
 {
     return moronet8_load_any(vm, &vm->bios_api, &vm->bios, cart, MORONET8_API_CART | MORONET8_API_BIOS);
 }
 
 MORONET8_PUBLIC(moronet8 *)
-moronet8_load_cart(moronet8 *vm, moronet8_cart *cart)
+moronet8_load_cart(moronet8 *vm, moronet8_cart_data *cart)
 {
-    return moronet8_load_any(vm, &vm->api, &vm->cart, cart, MORONET8_API_CART);
+    return moronet8_load_any(vm, &vm->cart_api, &vm->cart, cart, MORONET8_API_CART);
 }
 
 MORONET8_PUBLIC(void)
@@ -339,7 +386,7 @@ moronet8_unload_bios(moronet8 *vm)
 MORONET8_PUBLIC(void)
 moronet8_unload_cart(moronet8 *vm)
 {
-    moronet8_unload_any(&vm->api, &vm->cart);
+    moronet8_unload_any(&vm->cart_api, &vm->cart);
 }
 
 MORONET8_PUBLIC(void)
@@ -360,12 +407,10 @@ moronet8_tick(moronet8 *vm, float dt)
     if (vm->state == MORONET8_STATE_CART || vm->state == MORONET8_STATE_OVERLAY)
     {
         vm->cart_select = &vm->cart;
-        moronet8_api_tick(&vm->api);
+        moronet8_api_tick(&vm->cart_api);
     }
 
     /* Always tick bios */
-    vm->cart_select = &vm->bios;
-    moronet8_api_tick(&vm->bios_api);
 
     if (session_state == MORONET8_SESSION_HOSTING)
     {
@@ -374,58 +419,37 @@ moronet8_tick(moronet8 *vm, float dt)
             &vm->ram.netram,
             vm->ram.netram_sp);
     }
-
-    /* Copy screen data */
-    moronet8_u8 index;
-    for (size_t j = 0; j < MORONET8_SCREEN_HEIGHT; ++j)
-    {
-        for (size_t i = 0; i < MORONET8_SCREEN_WIDTH; ++i)
-        {
-            index = vm->ram.vram[i + j * MORONET8_SCREEN_WIDTH];
-            if (index >= MORONET8_CART_PALETTE_SIZE)
-            {
-                index = 0;
-            }
-
-            vm->screen[i + j * MORONET8_SCREEN_WIDTH] = ((vm->bios.palette[index].b << 16) & 0xFF0000) +
-                                                        ((vm->bios.palette[index].g << 8) & 0xFF00) +
-                                                        (vm->bios.palette[index].r & 0xFF);
-        }
-    }
 }
 
 static moronet8_cart_tileset *moronet8_selected_font(struct moronet8 *vm)
 {
     assert(vm->cart_select);
-    assert(vm->cart_select->font);
-    return &vm->cart_select->font->tileset;
+    return &vm->cart_select->font;
 }
 
 static moronet8_cart_tileset *moronet8_selected_tileset(struct moronet8 *vm)
 {
     assert(vm->cart_select);
-    assert(vm->cart_select->tileset);
-    return &vm->cart_select->tileset->tileset;
+    return &vm->cart_select->tileset;
 }
 
 MORONET8_PUBLIC(moronet8_u8)
 moronet8_fontget(moronet8 *vm)
 {
-    assert(vm->cart_select);
-    assert(vm->cart_select->font);
-    return vm->cart_select->font->base.id;
+    return 0;
 }
 
 MORONET8_PUBLIC(void)
 moronet8_fontset(moronet8 *vm, moronet8_u8 id)
 {
     assert(vm->cart_select);
-    moronet8_cart_select_font(vm->cart_select, id);
+    // moronet8_cart_select_font(vm->cart_select, id);
 }
 
 MORONET8_PUBLIC(void)
 moronet8_print(moronet8 *vm, const char *buf, size_t size, moronet8_s32 x, moronet8_s32 y, moronet8_u8 col)
 {
+    _MORONET8_PRINTF(buf);
     for (size_t i = 0; i < size; ++i)
     {
         moronet8_printc(vm, buf[i], x + i * MORONET8_SPRITE_WIDTH, y, col);
@@ -449,7 +473,15 @@ static void moronet8_set_pixel(moronet8 *vm, moronet8_s32 x, moronet8_s32 y, mor
         }
     }
 
-    moronet8_poke(vm, x + ((moronet8_u16)y) * MORONET8_SCREEN_WIDTH, value);
+    struct moronet8_cart_color *c = &vm->cart_select->palette[value];
+
+#if MORONET8_COLOR_FORMAT == MORONET8_COLOR_RGB565
+    moronet8_u16 c16 = ((c->r & 0xf8) << 8) |
+                       ((c->g & 0xfc) << 3) |
+                       ((c->b & 0xf8) >> 3);
+
+    ((moronet8_u16 *)vm->ram.vram)[x + y * MORONET8_SCREEN_WIDTH] = __builtin_bswap16(c16);
+#endif
 }
 
 static void moronet8_draw_sprite(moronet8 *vm, moronet8_cart_tileset *tileset, moronet8_u8 id, moronet8_s32 x, moronet8_s32 y, moronet8_u8 *col)
@@ -530,7 +562,7 @@ moronet8_cos(struct moronet8 *vm, float val)
 MORONET8_PUBLIC(void)
 moronet8_cls(moronet8 *vm)
 {
-    memset(&vm->ram.vram, 0, MORONET8_VRAM_SIZE);
+    memset(vm->ram.vram, 0, MORONET8_VRAM_SIZE);
 }
 
 MORONET8_PUBLIC(moronet8_u8)
@@ -605,16 +637,14 @@ moronet8_rectfill(moronet8 *vm, moronet8_s32 x0, moronet8_s32 y0, moronet8_s32 x
 MORONET8_PUBLIC(moronet8_u8)
 moronet8_tilesetget(moronet8 *vm)
 {
-    assert(vm->cart_select);
-    assert(vm->cart_select->tileset);
-    return vm->cart_select->tileset->base.id;
+    return 0;
 }
 
 MORONET8_PUBLIC(void)
 moronet8_tilesetset(moronet8 *vm, moronet8_u8 id)
 {
     assert(vm->cart_select);
-    moronet8_cart_select_tileset(vm->cart_select, id);
+    // moronet8_cart_select_tileset(vm->cart_select, id);
 }
 
 MORONET8_PUBLIC(void)
@@ -640,16 +670,14 @@ moronet8_paltset(moronet8 *vm, moronet8_u8 col, moronet8_s32 t)
 MORONET8_PUBLIC(moronet8_u8)
 moronet8_codeget(moronet8 *vm)
 {
-    assert(vm->cart_select);
-    assert(vm->cart_select->code);
-    return vm->cart_select->code->base.id;
+    return 0;
 }
 
 MORONET8_PUBLIC(void)
 moronet8_codeset(moronet8 *vm, moronet8_u8 id)
 {
     assert(vm->cart_select);
-    moronet8_cart_select_code(vm->cart_select, id);
+    // moronet8_cart_select_code(vm->cart_select, id);
 }
 
 MORONET8_PUBLIC(moronet8_u8)
@@ -750,13 +778,13 @@ moronet8_state_set(moronet8 *vm, moronet8_state state)
     switch (state)
     {
     case MORONET8_STATE_BIOS:
-        printf("state BIOS\n");
+        _MORONET8_PRINTF("state BIOS\n");
         break;
     case MORONET8_STATE_CART:
-        printf("state CART\n");
+        _MORONET8_PRINTF("state CART\n");
         break;
     case MORONET8_STATE_OVERLAY:
-        printf("state OVERLAY\n");
+        _MORONET8_PRINTF("state OVERLAY\n");
         break;
     default:
         break;
@@ -767,6 +795,7 @@ moronet8_state_set(moronet8 *vm, moronet8_state state)
 MORONET8_PUBLIC(void)
 moronet8_load(moronet8 *vm, const char *cart)
 {
+#ifdef MORONET8_FILESYSTEM
     if (vm->bios_api.on_cart_loading)
     {
         vm->bios_api.on_cart_loading(&vm->bios_api);
@@ -781,6 +810,9 @@ moronet8_load(moronet8 *vm, const char *cart)
     {
         vm->bios_api.on_cart_loaded(&vm->bios_api);
     }
+#else
+    _MORONET8_PRINTF("load not supported on this platform\n");
+#endif
 }
 
 MORONET8_PUBLIC(moronet8_session_state)
@@ -794,7 +826,7 @@ moronet8_netsessionstart(moronet8 *vm)
 {
     moronet8_netsessionleave(vm);
 
-    printf("start net session\n");
+    _MORONET8_PRINTF("start net session\n");
     vm->session = moronet8_session_host("127.0.0.1");
 }
 
@@ -803,14 +835,14 @@ moronet8_netsessionjoin(moronet8 *vm, const char *host)
 {
     moronet8_netsessionleave(vm);
 
-    printf("join net session %s\n", host);
+    _MORONET8_PRINTF("join net session %s\n", host);
     vm->session = moronet8_session_join(host);
 }
 
 MORONET8_PUBLIC(void)
 moronet8_netsessionleave(moronet8 *vm)
 {
-    printf("leave net session\n");
+    _MORONET8_PRINTF("leave net session\n");
     if (!vm->session)
     {
         return;

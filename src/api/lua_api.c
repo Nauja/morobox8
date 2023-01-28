@@ -36,6 +36,11 @@ static moronet8 *moronet8_lua_get_vm(lua_State *lua)
 #define MORONET8_LUA_GET_S64(lua, index) ((moronet8_s64)lua_tonumber(lua, index))
 #define MORONET8_LUA_GET_FLOAT(lua, index) ((float)lua_tonumber(lua, index))
 
+static inline void moronet8_lua_error(lua_State *lua, const char *fmt)
+{
+    moronet8_printf(fmt);
+}
+
 static inline const char *moronet8_lua_get_string(lua_State *lua, int index, size_t *size)
 {
     return luaL_tolstring(lua, index, size);
@@ -105,7 +110,7 @@ static int moronet8_lua_api_font(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, font([id])\n");
+        moronet8_lua_error(lua, "invalid parameters, font([id])\n");
 
     return 0;
 }
@@ -130,7 +135,7 @@ static int moronet8_lua_api_print(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, print(msg, [x, y, col])\n");
+        moronet8_lua_error(lua, "invalid parameters, print(msg, [x, y, col])\n");
 
     return 0;
 }
@@ -151,7 +156,7 @@ static int moronet8_lua_api_btn(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, btn([id], [player])\n");
+        moronet8_lua_error(lua, "invalid parameters, btn([id], [player])\n");
 
     return 0;
 }
@@ -172,7 +177,7 @@ static int moronet8_lua_api_btnp(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, btn([id], [player])\n");
+        moronet8_lua_error(lua, "invalid parameters, btn([id], [player])\n");
 
     return 0;
 }
@@ -188,7 +193,7 @@ static int moronet8_lua_api_dt(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, dt()\n");
+        moronet8_lua_error(lua, "invalid parameters, dt()\n");
 
     return 0;
 }
@@ -204,7 +209,7 @@ static int moronet8_lua_api_sin(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, sin(val)\n");
+        moronet8_lua_error(lua, "invalid parameters, sin(val)\n");
 
     return 0;
 }
@@ -220,7 +225,7 @@ static int moronet8_lua_api_cos(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, cos(val)\n");
+        moronet8_lua_error(lua, "invalid parameters, cos(val)\n");
 
     return 0;
 }
@@ -236,7 +241,7 @@ static int moronet8_lua_api_cls(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, cls()\n");
+        moronet8_lua_error(lua, "invalid parameters, cls()\n");
 
     return 0;
 }
@@ -260,7 +265,7 @@ static int moronet8_lua_api_color(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, color([col])\n");
+        moronet8_lua_error(lua, "invalid parameters, color([col])\n");
 
     return 0;
 }
@@ -282,7 +287,7 @@ static int moronet8_lua_api_line(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, line(x0, y0, x1, y1, [col])\n");
+        moronet8_lua_error(lua, "invalid parameters, line(x0, y0, x1, y1, [col])\n");
 
     return 0;
 }
@@ -304,7 +309,7 @@ static int moronet8_lua_api_rect(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, rect(x0, y0, x1, y1, [col])\n");
+        moronet8_lua_error(lua, "invalid parameters, rect(x0, y0, x1, y1, [col])\n");
 
     return 0;
 }
@@ -326,7 +331,7 @@ static int moronet8_lua_api_rectfill(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, rectfill(x0, y0, x1, y1, [col])\n");
+        moronet8_lua_error(lua, "invalid parameters, rectfill(x0, y0, x1, y1, [col])\n");
 
     return 0;
 }
@@ -350,7 +355,7 @@ static int moronet8_lua_api_tileset(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, tileset([id])\n");
+        moronet8_lua_error(lua, "invalid parameters, tileset([id])\n");
 
     return 0;
 }
@@ -372,7 +377,7 @@ static int moronet8_lua_api_spr(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, spr(id, x, y, [w, h])\n");
+        moronet8_lua_error(lua, "invalid parameters, spr(id, x, y, [w, h])\n");
 
     return 0;
 }
@@ -401,7 +406,7 @@ static int moronet8_lua_api_palt(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, palt(col, [t])\n");
+        moronet8_lua_error(lua, "invalid parameters, palt(col, [t])\n");
 
     return 0;
 }
@@ -425,7 +430,7 @@ static int moronet8_lua_api_code(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, code([id])\n");
+        moronet8_lua_error(lua, "invalid parameters, code([id])\n");
 
     return 0;
 }
@@ -443,7 +448,7 @@ static int moronet8_lua_api_peek(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, peek(addr)\n");
+        moronet8_lua_error(lua, "invalid parameters, peek(addr)\n");
 
     return 0;
 }
@@ -459,7 +464,7 @@ static int moronet8_lua_api_poke(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, peek(addr, val)\n");
+        moronet8_lua_error(lua, "invalid parameters, peek(addr, val)\n");
 
     return 0;
 }
@@ -480,7 +485,7 @@ static int moronet8_lua_api_pget(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, pget(x, y)\n");
+        moronet8_lua_error(lua, "invalid parameters, pget(x, y)\n");
 
     return 0;
 }
@@ -500,66 +505,66 @@ static int moronet8_lua_api_pset(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, pset(x, y, val)\n");
+        moronet8_lua_error(lua, "invalid parameters, pset(x, y, val)\n");
 
     return 0;
 }
 
-#define MORONET8_LUA_API_STACK_SP(name, type)                         \
+#define MORONET8_LUA_API_STACK_SP(name, type)                                 \
+    int top = lua_gettop(lua);                                                \
+    moronet8 *vm = moronet8_lua_get_vm(lua);                                  \
+                                                                              \
+    if (top < 2)                                                              \
+    {                                                                         \
+        if (top == 0)                                                         \
+        {                                                                     \
+            MORONET8_LUA_PUSH_NUMBER(                                         \
+                lua,                                                          \
+                (int)moronet8_##name##get(vm));                               \
+            return 1;                                                         \
+        }                                                                     \
+                                                                              \
+        moronet8_##name##set(                                                 \
+            vm,                                                               \
+            (type)MORONET8_LUA_GET_NUMBER(lua, 1));                           \
+        return 0;                                                             \
+    }                                                                         \
+    else                                                                      \
+    {                                                                         \
+        moronet8_lua_error(lua, "invalid parameters, " #name "([offset])\n"); \
+    }                                                                         \
+    return 0;
+
+#define MORONET8_LUA_API_STACK_PUSH(name)                                \
+    int top = lua_gettop(lua);                                           \
+    moronet8 *vm = moronet8_lua_get_vm(lua);                             \
+                                                                         \
+    if (top == 1)                                                        \
+    {                                                                    \
+        moronet8_##name(vm, MORONET8_LUA_GET_U8(lua, 1));                \
+        return 0;                                                        \
+    }                                                                    \
+    else                                                                 \
+    {                                                                    \
+        moronet8_lua_error(lua, "invalid parameters, " #name "(val)\n"); \
+    }                                                                    \
+    return 0;
+
+#define MORONET8_LUA_API_STACK_POP(name)                              \
     int top = lua_gettop(lua);                                        \
     moronet8 *vm = moronet8_lua_get_vm(lua);                          \
                                                                       \
-    if (top < 2)                                                      \
+    if (top == 0)                                                     \
     {                                                                 \
-        if (top == 0)                                                 \
-        {                                                             \
-            MORONET8_LUA_PUSH_NUMBER(                                 \
-                lua,                                                  \
-                (int)moronet8_##name##get(vm));                       \
-            return 1;                                                 \
-        }                                                             \
-                                                                      \
-        moronet8_##name##set(                                         \
-            vm,                                                       \
-            (type)MORONET8_LUA_GET_NUMBER(lua, 1));                   \
-        return 0;                                                     \
+        moronet8_lua_push_word(                                       \
+            lua,                                                      \
+            moronet8_##name(vm));                                     \
+        return 1;                                                     \
     }                                                                 \
     else                                                              \
     {                                                                 \
-        luaL_error(lua, "invalid parameters, " #name "([offset])\n"); \
+        moronet8_lua_error(lua, "invalid parameters, " #name "()\n"); \
     }                                                                 \
-    return 0;
-
-#define MORONET8_LUA_API_STACK_PUSH(name)                        \
-    int top = lua_gettop(lua);                                   \
-    moronet8 *vm = moronet8_lua_get_vm(lua);                     \
-                                                                 \
-    if (top == 1)                                                \
-    {                                                            \
-        moronet8_##name(vm, MORONET8_LUA_GET_U8(lua, 1));        \
-        return 0;                                                \
-    }                                                            \
-    else                                                         \
-    {                                                            \
-        luaL_error(lua, "invalid parameters, " #name "(val)\n"); \
-    }                                                            \
-    return 0;
-
-#define MORONET8_LUA_API_STACK_POP(name)                      \
-    int top = lua_gettop(lua);                                \
-    moronet8 *vm = moronet8_lua_get_vm(lua);                  \
-                                                              \
-    if (top == 0)                                             \
-    {                                                         \
-        moronet8_lua_push_word(                               \
-            lua,                                              \
-            moronet8_##name(vm));                             \
-        return 1;                                             \
-    }                                                         \
-    else                                                      \
-    {                                                         \
-        luaL_error(lua, "invalid parameters, " #name "()\n"); \
-    }                                                         \
     return 0;
 
 static int moronet8_lua_api_nethost(lua_State *lua)
@@ -576,7 +581,7 @@ static int moronet8_lua_api_nethost(lua_State *lua)
     }
     else
     {
-        luaL_error(lua, "invalid parameters, nethost()\n");
+        moronet8_lua_error(lua, "invalid parameters, nethost()\n");
     }
 
     return 0;
@@ -596,7 +601,7 @@ static int moronet8_lua_api_netclient(lua_State *lua)
     }
     else
     {
-        luaL_error(lua, "invalid parameters, netclient()\n");
+        moronet8_lua_error(lua, "invalid parameters, netclient()\n");
     }
 
     return 0;
@@ -643,7 +648,7 @@ static int moronet8_lua_api_pktsend(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, pktsend()\n");
+        moronet8_lua_error(lua, "invalid parameters, pktsend()\n");
 
     return 0;
 }
@@ -665,7 +670,7 @@ static int moronet8_lua_api_state(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, state([val])\n");
+        moronet8_lua_error(lua, "invalid parameters, state([val])\n");
 
     return 0;
 }
@@ -682,7 +687,7 @@ static int moronet8_lua_api_load(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, load(cart)\n");
+        moronet8_lua_error(lua, "invalid parameters, load(cart)\n");
 
     return 0;
 }
@@ -698,7 +703,7 @@ static int moronet8_lua_api_netsessionstate(lua_State *lua)
         return 1;
     }
     else
-        luaL_error(lua, "invalid parameters, netsessionstate()\n");
+        moronet8_lua_error(lua, "invalid parameters, netsessionstate()\n");
 
     return 0;
 }
@@ -714,7 +719,7 @@ static int moronet8_lua_api_netsessionstart(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, netsessionstart()\n");
+        moronet8_lua_error(lua, "invalid parameters, netsessionstart()\n");
 
     return 0;
 }
@@ -731,7 +736,7 @@ static int moronet8_lua_api_netsessionjoin(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, netsessionjoin(host)\n");
+        moronet8_lua_error(lua, "invalid parameters, netsessionjoin(host)\n");
 
     return 0;
 }
@@ -747,7 +752,7 @@ static int moronet8_lua_api_netsessionleave(lua_State *lua)
         return 0;
     }
     else
-        luaL_error(lua, "invalid parameters, netsessionleave()\n");
+        moronet8_lua_error(lua, "invalid parameters, netsessionleave()\n");
 
     return 0;
 }
@@ -775,12 +780,25 @@ static moronet8_api *moronet8_lua_api_load_string(moronet8_api *api, const char 
     MORONET8_UNUSED(size);
 
     lua_State *lua = (lua_State *)api->state;
+    if (!lua)
+    {
+        moronet8_printf("error in load_string: no lua state");
+        return NULL;
+    }
 
     lua_settop(lua, 0);
 
-    if (luaL_loadstring(lua, buf) != LUA_OK || lua_pcall(lua, 0, LUA_MULTRET, 0) != LUA_OK)
+    if (luaL_loadstring(lua, buf) != LUA_OK)
     {
-        printf("error in load_string: %s", lua_tostring(lua, -1));
+        moronet8_printf("error in load_string: ");
+        moronet8_printf(lua_tostring(lua, -1));
+        return NULL;
+    }
+
+    if (lua_pcall(lua, 0, LUA_MULTRET, 0) != LUA_OK)
+    {
+        moronet8_printf("error in load_string: ");
+        moronet8_printf(lua_tostring(lua, -1));
         return NULL;
     }
 
@@ -789,25 +807,29 @@ static moronet8_api *moronet8_lua_api_load_string(moronet8_api *api, const char 
 
 static moronet8_api *moronet8_lua_api_tick(moronet8_api *api)
 {
+    moronet8_printf("tick cart");
     lua_State *lua = (lua_State *)api->state;
     if (!lua)
     {
+        moronet8_printf("no state");
         return NULL;
     }
 
     lua_getglobal(lua, MORONET8_TICK_FN);
     if (!lua_isfunction(lua, -1))
     {
+        moronet8_lua_error(lua, "no tick");
         lua_pop(lua, 1);
         return NULL;
     }
 
     if (moronet8_lua_api_do_call(lua, 0, 0) != LUA_OK)
     {
-        printf("error in tick: %s", lua_tostring(lua, -1));
+        moronet8_lua_error(lua, lua_tostring(lua, -1));
         return NULL;
     }
 
+    moronet8_lua_error(lua, "ticked");
     return api;
 }
 
@@ -828,7 +850,7 @@ void moronet8_lua_api_on_cart_loading(moronet8_api *api)
 
     if (moronet8_lua_api_do_call(lua, 0, 0) != LUA_OK)
     {
-        printf("error in tick: %s", lua_tostring(lua, -1));
+        moronet8_printf("error in tick: %s", lua_tostring(lua, -1));
     }
 }
 
@@ -849,12 +871,12 @@ void moronet8_lua_api_on_cart_loaded(moronet8_api *api)
 
     if (moronet8_lua_api_do_call(lua, 0, 0) != LUA_OK)
     {
-        printf("error in tick: %s", lua_tostring(lua, -1));
+        moronet8_printf("error in tick: %s", lua_tostring(lua, -1));
         return;
     }
 }
 
-static void moronet8_lua_api_delete(moronet8_api *api)
+static void moronet8_lua_api_free(moronet8_api *api)
 {
     if (api->state)
     {
@@ -868,13 +890,14 @@ moronet8_lua_api_init(moronet8_api *api, moronet8 *vm, moronet8_api_type type)
     lua_State *lua = luaL_newstate();
     if (!lua)
     {
+        moronet8_printf("error in api_init: no lua state");
         return NULL;
     }
 
     moronet8_lua_api_init_lua(lua, vm, type);
 
     api->state = (void *)lua;
-    api->delete = &moronet8_lua_api_delete;
+    api->free = &moronet8_lua_api_free;
     api->load_string = &moronet8_lua_api_load_string;
     api->tick = &moronet8_lua_api_tick;
     api->on_cart_loading = &moronet8_lua_api_on_cart_loading;

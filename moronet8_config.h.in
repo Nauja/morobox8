@@ -4,11 +4,11 @@
 #include <wchar.h>
 
 /** Major version of ccmoro8. */
-#define MORONET8_VERSION_MAJOR @MORONET8_VERSION_MAJOR @
+#define MORONET8_VERSION_MAJOR @MORONET8_VERSION_MAJOR@
 /** Minor version of ccmoro8. */
-#define MORONET8_VERSION_MINOR @MORONET8_VERSION_MINOR @
+#define MORONET8_VERSION_MINOR @MORONET8_VERSION_MINOR@
 /** Patch version of ccmoro8. */
-#define MORONET8_VERSION_PATCH @MORONET8_VERSION_PATCH @
+#define MORONET8_VERSION_PATCH @MORONET8_VERSION_PATCH@
 
 /* Define to 1 if you have the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H

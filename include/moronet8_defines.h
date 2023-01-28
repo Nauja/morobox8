@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #define MORONET8_CREATE_H(type)    \
     MORONET8_PUBLIC(struct type *) \
     type##_create(void);           \

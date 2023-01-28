@@ -4,15 +4,15 @@
 #include <wchar.h>
 
 /** Major version of ccmoro8. */
-#define MORONET8_VERSION_MAJOR @MORONET8_VERSION_MAJOR @
+#define MORONET8_VERSION_MAJOR 0
 /** Minor version of ccmoro8. */
-#define MORONET8_VERSION_MINOR @MORONET8_VERSION_MINOR @
+#define MORONET8_VERSION_MINOR 0
 /** Patch version of ccmoro8. */
-#define MORONET8_VERSION_PATCH @MORONET8_VERSION_PATCH @
+#define MORONET8_VERSION_PATCH 1
 
 /* Define to 1 if you have the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H
-#define HAVE_STDIO_H 1
+/* #undef HAVE_STDIO_H */
 #endif
 
 /* Define to 1 if you have the <stdlib.h> header file. */
@@ -52,12 +52,12 @@
 
 /* Define to 1 if you have the `free' function. */
 #ifndef HAVE_FREE
-#define HAVE_FREE 1
+/* #undef HAVE_FREE */
 #endif
 
 /* Define to 1 if you have the `malloc' function. */
 #ifndef HAVE_MALLOC
-#define HAVE_MALLOC 1
+/* #undef HAVE_MALLOC */
 #endif
 
 #ifndef MORONET8_DOXYGEN
@@ -115,7 +115,7 @@
 
 #ifndef MORONET8_FILESYSTEM
 /* Builds with support for filesystem. */
-#define MORONET8_FILESYSTEM 1
+/* #undef MORONET8_FILESYSTEM */
 #endif
 
 #ifndef MORONET8_MALLOC

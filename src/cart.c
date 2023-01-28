@@ -1,7 +1,6 @@
 #include "cart.h"
+#include "moronet8.h"
 #include "moronet8_types.h"
-
-#include <png.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -16,10 +15,12 @@
 #endif
 
 #if MORONET8_FILESYSTEM
+#include <png.h>
 #include <fs.h>
-#endif
 
 typedef struct fs_directory_iterator fs_directory_iterator;
+#endif
+
 typedef enum moronet8_lang moronet8_lang;
 typedef enum moronet8_cart_chunk_type moronet8_cart_chunk_type;
 typedef struct moronet8_cart_chunk moronet8_cart_chunk;
@@ -31,6 +32,19 @@ typedef struct moronet8_cart_tileset moronet8_cart_tileset;
 typedef struct moronet8_cart_tileset_chunk moronet8_cart_tileset_chunk;
 typedef struct moronet8_cart_sprite moronet8_cart_sprite;
 
+MORONET8_CID_C(moronet8_cart_code_chunk)
+MORONET8_CID_C(moronet8_cart_tileset_chunk)
+MORONET8_CID_C(moronet8_cart_header)
+MORONET8_CID_C(moronet8_cart_data)
+MORONET8_CID_C(moronet8_cart)
+
+MORONET8_PUBLIC(size_t)
+moronet8_cart_sizeof(void)
+{
+    return sizeof(struct moronet8_cart);
+}
+
+#if MORONET8_FILESYSTEM
 static struct
 {
     const char *ext;
@@ -45,11 +59,6 @@ static struct
     {NULL, MORONET8_LANG_LUA},
 };
 
-MORONET8_CID_C(moronet8_cart_code_chunk)
-MORONET8_CID_C(moronet8_cart_tileset_chunk)
-MORONET8_CID_C(moronet8_cart)
-
-#if MORONET8_FILESYSTEM
 MORONET8_PUBLIC(void)
 moronet8_cart_load_file(moronet8_cart *cart, const char *path)
 {
@@ -340,7 +349,6 @@ MORONET8_PUBLIC(void)
 moronet8_cart_dump_dir(moronet8_cart *cart, const char *path)
 {
 }
-#endif
 
 MORONET8_PUBLIC(void)
 moronet8_cart_load(moronet8_cart *cart, const void *buf, size_t size)
@@ -369,64 +377,4 @@ moronet8_cart_dump(moronet8_cart *cart, void *buf, size_t size)
     memcpy(buf, (void *)cart, cart_size);
     return cart_size;
 }
-
-MORONET8_PUBLIC(enum moronet8_lang)
-moronet8_cart_get_lang(moronet8_cart *cart)
-{
-    return cart->code->code.lang;
-}
-
-static moronet8_cart_chunk *moronet8_card_find_bank(moronet8_cart *cart, moronet8_cart_chunk_type type, moronet8_u8 id)
-{
-    moronet8_cart_chunk *chunk = cart->chunks;
-    while (chunk)
-    {
-        if (chunk->type == type && chunk->id == id)
-        {
-            return chunk;
-        }
-
-        chunk = chunk->next;
-    }
-
-    return NULL;
-}
-
-MORONET8_PUBLIC(void)
-moronet8_cart_select_font(moronet8_cart *cart, moronet8_u8 id)
-{
-    moronet8_cart_chunk *chunk = moronet8_card_find_bank(cart, MORONET8_CART_CHUNK_TILESET, id);
-    if (!chunk)
-    {
-        return;
-    }
-
-    cart->font = (moronet8_cart_tileset_chunk *)chunk;
-    printf("font bank %u selected\n", id);
-}
-
-MORONET8_PUBLIC(void)
-moronet8_cart_select_tileset(moronet8_cart *cart, moronet8_u8 id)
-{
-    moronet8_cart_chunk *chunk = moronet8_card_find_bank(cart, MORONET8_CART_CHUNK_TILESET, id);
-    if (!chunk)
-    {
-        return;
-    }
-
-    cart->tileset = (moronet8_cart_tileset_chunk *)chunk;
-    printf("tileset bank %u selected\n", id);
-}
-
-MORONET8_PUBLIC(void)
-moronet8_cart_select_code(moronet8_cart *cart, moronet8_u8 id)
-{
-    moronet8_cart_chunk *chunk = moronet8_card_find_bank(cart, MORONET8_CART_CHUNK_CODE, id);
-    if (!chunk)
-    {
-        return;
-    }
-
-    cart->code = (moronet8_cart_code_chunk *)chunk;
-    printf("code bank %u selected\n", id);
-}
+#endif

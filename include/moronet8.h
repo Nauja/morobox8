@@ -29,6 +29,8 @@ extern "C"
         void *(*malloc_fn)(size_t size);
         /* Custom free function. */
         void (*free_fn)(void *ptr);
+        /* Custom printf function. */
+        void (*printf_fn)(const char *fmt, ...);
         struct moronet8_session *(*host_session_fn)(const char *host);
         struct moronet8_session *(*join_session_fn)(const char *host);
         void (*delete_session_fn)(struct moronet8_session *session);
@@ -45,7 +47,7 @@ extern "C"
         /* State of the API. */
         void *state;
         /* Delete the API. */
-        void (*delete)(struct moronet8_api *api);
+        void (*free)(struct moronet8_api *api);
         /* Load code from buffer. */
         struct moronet8_api *(*load_string)(struct moronet8_api *api, const char *buf, size_t size);
         /* Tick the code. */
@@ -81,7 +83,7 @@ extern "C"
         struct
         {
             /* Video ram: 128x128 pixels. */
-            moronet8_u8 vram[MORONET8_VRAM_SIZE];
+            void *vram;
             /* Networked ram. */
             moronet8_u8 netram[MORONET8_NETRAM_SIZE];
             /* Stack pointer for netram. */
@@ -111,14 +113,14 @@ extern "C"
         moronet8_u32 *screen;
         /* API used for the bios only. */
         struct moronet8_api bios_api;
-        /* API used for games. */
-        struct moronet8_api api;
-        /* Cart for the bios. */
-        struct moronet8_cart bios;
-        /* Cart for the game. */
-        struct moronet8_cart cart;
-        /* Cart selector. */
-        struct moronet8_cart *cart_select;
+        /* API used for the cart. */
+        struct moronet8_api cart_api;
+        /* Bios data. */
+        struct moronet8_cart_data bios;
+        /* Cart data. */
+        struct moronet8_cart_data cart;
+        /* Pointer to bios or cart. */
+        struct moronet8_cart_data *cart_select;
         struct moronet8_session *session;
     };
 
@@ -137,6 +139,9 @@ extern "C"
 
     MORONET8_PUBLIC(void)
     moronet8_free(void *p);
+
+    MORONET8_PUBLIC(void)
+    moronet8_printf(const char *fmt, ...);
 
     MORONET8_PUBLIC(struct moronet8_session *)
     moronet8_session_host(const char *host);
@@ -178,14 +183,17 @@ extern "C"
     MORONET8_PUBLIC(void)
     moronet8_delete(struct moronet8 *vm);
 
+    MORONET8_PUBLIC(size_t)
+    moronet8_sizeof(void);
+
     MORONET8_PUBLIC(struct moronet8 *)
-    moronet8_load_bios(struct moronet8 *vm, struct moronet8_cart *cart);
+    moronet8_load_bios(struct moronet8 *vm, struct moronet8_cart_data *cart);
 
     MORONET8_PUBLIC(void)
     moronet8_unload_bios(struct moronet8 *vm);
 
     MORONET8_PUBLIC(struct moronet8 *)
-    moronet8_load_cart(struct moronet8 *vm, struct moronet8_cart *cart);
+    moronet8_load_cart(struct moronet8 *vm, struct moronet8_cart_data *cart);
 
     MORONET8_PUBLIC(void)
     moronet8_unload_cart(struct moronet8 *vm);
