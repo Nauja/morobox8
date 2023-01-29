@@ -24,13 +24,14 @@ typedef struct moronet8 moronet8;
 
 int moronet8_run_player(moronet8 *vm)
 {
-    vm->screen = MORONET8_MALLOC(MORONET8_VRAM_SIZE * 4);
+    moronet8_u16 frame_buffer[MORONET8_SCREEN_WIDTH * MORONET8_SCREEN_HEIGHT];
+    vm->ram.vram = (void *)&frame_buffer[0];
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     SDL_Window *window = SDL_CreateWindow(MORONET8_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, MORONET8_SCREEN_WIDTH * MORONET8_WINDOW_SCALE, MORONET8_SCREEN_HEIGHT * MORONET8_WINDOW_SCALE, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, MORONET8_SCREEN_WIDTH, MORONET8_SCREEN_HEIGHT);
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR565, SDL_TEXTUREACCESS_STREAMING, MORONET8_SCREEN_WIDTH, MORONET8_SCREEN_HEIGHT);
 
     struct state state;
     state.quit = 1 == 0;
@@ -108,7 +109,7 @@ int moronet8_run_player(moronet8 *vm)
             moronet8_s32 pitch = 0;
             SDL_Rect destination;
             SDL_LockTexture(texture, NULL, &pixels, &pitch);
-            SDL_memcpy(pixels, (const void *)vm->screen, pitch * MORONET8_SCREEN_HEIGHT);
+            SDL_memcpy(pixels, (const void *)frame_buffer, pitch * MORONET8_SCREEN_HEIGHT);
             SDL_UnlockTexture(texture);
 
             // Render the image in the proper aspect ratio.

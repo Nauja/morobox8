@@ -12,17 +12,17 @@
     MORONET8_PUBLIC(void)          \
     type##_delete(struct type *);
 
-#define MORONET8_CREATE_C(type)                                        \
-    MORONET8_PUBLIC(struct type *)                                     \
-    type##_create(void)                                                \
-    {                                                                  \
-        struct type *o = (struct type *)MORONET8_MALLOC(sizeof(type)); \
-        if (o)                                                         \
-        {                                                              \
-            type##_init(o);                                            \
-        }                                                              \
-                                                                       \
-        return o;                                                      \
+#define MORONET8_CREATE_C(type)                                               \
+    MORONET8_PUBLIC(struct type *)                                            \
+    type##_create(void)                                                       \
+    {                                                                         \
+        struct type *o = (struct type *)MORONET8_MALLOC(sizeof(struct type)); \
+        if (o)                                                                \
+        {                                                                     \
+            type##_init(o);                                                   \
+        }                                                                     \
+                                                                              \
+        return o;                                                             \
     }
 
 #define MORONET8_INIT_C(type)              \

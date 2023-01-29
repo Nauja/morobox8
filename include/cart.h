@@ -126,6 +126,8 @@ extern "C"
         struct moronet8_cart_header header;
         /* Cart data. */
         struct moronet8_cart_data data;
+        /* Cart chunks. */
+        struct moronet8_cart_chunk *chunks;
     };
 
     MORONET8_CREATE_H(moronet8_cart_code_chunk)
@@ -156,6 +158,15 @@ extern "C"
     MORONET8_PUBLIC(size_t)
     moronet8_cart_dump(struct moronet8_cart *cart, void *buf, size_t size);
 #endif
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_select_font(struct moronet8_cart *cart, moronet8_u8 id);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_select_tileset(struct moronet8_cart *cart, moronet8_u8 id);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_select_code(struct moronet8_cart *cart, moronet8_u8 id);
 
 #ifdef __cplusplus
 }

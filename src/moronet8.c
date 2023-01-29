@@ -350,12 +350,12 @@ static moronet8 *moronet8_load_any(moronet8 *vm, moronet8_api *api, moronet8_car
     if (!moronet8_api_load_string(api, &dst->code.text[0], MORONET8_CART_CODE_SIZE))
     {
         if (dst == &vm->cart)
-            _MORONET8_PRINTF("failed loads");
+            moronet8_printf("failed loads");
         return NULL;
     }
 
     if (dst == &vm->cart)
-        _MORONET8_PRINTF("api init");
+        moronet8_printf("api init");
     return vm;
 }
 
@@ -804,7 +804,7 @@ moronet8_load(moronet8 *vm, const char *cart)
     moronet8_cart c;
     moronet8_cart_load_dir(&c, cart);
 
-    moronet8_load_cart(vm, &c);
+    moronet8_load_cart(vm, &c.data);
 
     if (vm->bios_api.on_cart_loaded)
     {

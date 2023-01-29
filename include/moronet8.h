@@ -30,7 +30,7 @@ extern "C"
         /* Custom free function. */
         void (*free_fn)(void *ptr);
         /* Custom printf function. */
-        void (*printf_fn)(const char *fmt, ...);
+        void (*printf_fn)(const char *fmt, va_list args);
         struct moronet8_session *(*host_session_fn)(const char *host);
         struct moronet8_session *(*join_session_fn)(const char *host);
         void (*delete_session_fn)(struct moronet8_session *session);
@@ -82,7 +82,7 @@ extern "C"
     {
         struct
         {
-            /* Video ram: 128x128 pixels. */
+            /* Pointer to vram. */
             void *vram;
             /* Networked ram. */
             moronet8_u8 netram[MORONET8_NETRAM_SIZE];

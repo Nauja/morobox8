@@ -12,7 +12,7 @@
 
 /* Define to 1 if you have the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H
-/* #undef HAVE_STDIO_H */
+#define HAVE_STDIO_H 1
 #endif
 
 /* Define to 1 if you have the <stdlib.h> header file. */
@@ -52,12 +52,12 @@
 
 /* Define to 1 if you have the `free' function. */
 #ifndef HAVE_FREE
-/* #undef HAVE_FREE */
+#define HAVE_FREE 1
 #endif
 
 /* Define to 1 if you have the `malloc' function. */
 #ifndef HAVE_MALLOC
-/* #undef HAVE_MALLOC */
+#define HAVE_MALLOC 1
 #endif
 
 #ifndef MORONET8_DOXYGEN
@@ -115,7 +115,7 @@
 
 #ifndef MORONET8_FILESYSTEM
 /* Builds with support for filesystem. */
-/* #undef MORONET8_FILESYSTEM */
+#define MORONET8_FILESYSTEM 1
 #endif
 
 #ifndef MORONET8_MALLOC

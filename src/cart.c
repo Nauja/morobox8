@@ -88,16 +88,16 @@ moronet8_cart_dump_file(moronet8_cart *cart, const char *path)
 
 static moronet8_u8 moronet8_palette_add_color(moronet8_cart *cart, moronet8_u8 r, moronet8_u8 g, moronet8_u8 b)
 {
-    moronet8_cart_color *color = &cart->palette[0];
-    for (moronet8_u8 i = 0; i < MORONET8_CART_PALETTE_SIZE; ++i)
+    moronet8_cart_color *color = &cart->data.palette[0];
+    for (moronet8_u8 i = 0; i < MORONET8_PALETTE_SIZE; ++i)
     {
-        if (i >= cart->num_colors)
+        if (i >= cart->data.num_colors)
         {
             color->r = r;
             color->g = g;
             color->b = b;
-            cart->num_colors++;
-            printf("index %u color (%u, %u, %u)\n", i, r, g, b);
+            cart->data.num_colors++;
+            moronet8_printf("index %u color (%u, %u, %u)\n", i, r, g, b);
             return i;
         }
 
@@ -146,7 +146,7 @@ static moronet8_cart_tileset *moronet8_cart_load_png(moronet8_cart *cart, morone
         return NULL;
     }
 
-    printf("load %s\n", name);
+    moronet8_printf("load %s\n", name);
 
     FILE *fp = fopen(buf, "rb");
     if (!fp)
@@ -229,7 +229,7 @@ static moronet8_cart_tileset *moronet8_cart_load_png(moronet8_cart *cart, morone
         tiles_h = MORONET8_TILESET_HEIGHT;
     }
 
-    printf("tile contains (%u, %u) sprites\n", tiles_w, tiles_h);
+    moronet8_printf("tile contains (%u, %u) sprites\n", tiles_w, tiles_h);
 
     moronet8_u8 *pdata;
     moronet8_cart_sprite *sprite = &tileset->sprites[0];
@@ -259,7 +259,7 @@ static moronet8_cart_tileset *moronet8_cart_load_png(moronet8_cart *cart, morone
             ++sprite;
         }
     }
-    printf("%u indexed colors\n", cart->num_colors);
+    moronet8_printf("%u indexed colors\n", cart->data.num_colors);
 
     fclose(fp);
     png_destroy_read_struct(&png, &info, NULL);
@@ -299,7 +299,7 @@ static moronet8_cart_code *moronet8_cart_load_script(moronet8_cart_code *code, c
         return NULL;
     }
 
-    printf("load %s\n", name);
+    moronet8_printf("load %s\n", name);
 
     fs_read_file_buffer(buf, (void *)&code->text[0], MORONET8_CART_CODE_SIZE);
     return code;
@@ -329,7 +329,7 @@ static void moronet8_cart_load_code(moronet8_cart *cart, const char *path, moron
 MORONET8_PUBLIC(void)
 moronet8_cart_load_dir(moronet8_cart *cart, const char *path)
 {
-    printf("load dir %s\n", path);
+    moronet8_printf("load dir %s\n", path);
     size_t script_index = 0;
     for (size_t i = 0; i < 256; ++i)
     {
@@ -342,7 +342,10 @@ moronet8_cart_load_dir(moronet8_cart *cart, const char *path)
             script_index++;
         }
     }
-    printf("dir loaded\n");
+    moronet8_cart_select_tileset(cart, 0);
+    moronet8_cart_select_font(cart, 1);
+    moronet8_cart_select_code(cart, 0);
+    moronet8_printf("dir loaded\n");
 }
 
 MORONET8_PUBLIC(void)
@@ -378,3 +381,58 @@ moronet8_cart_dump(moronet8_cart *cart, void *buf, size_t size)
     return cart_size;
 }
 #endif
+
+static moronet8_cart_chunk *moronet8_card_find_bank(moronet8_cart *cart, moronet8_cart_chunk_type type, moronet8_u8 id)
+{
+    moronet8_cart_chunk *chunk = cart->chunks;
+    while (chunk)
+    {
+        if (chunk->type == type && chunk->id == id)
+        {
+            return chunk;
+        }
+
+        chunk = chunk->next;
+    }
+
+    return NULL;
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_select_font(moronet8_cart *cart, moronet8_u8 id)
+{
+    moronet8_cart_chunk *chunk = moronet8_card_find_bank(cart, MORONET8_CART_CHUNK_TILESET, id);
+    if (!chunk)
+    {
+        return;
+    }
+
+    memcpy(&cart->data.font, &((moronet8_cart_tileset_chunk *)chunk)->tileset, sizeof(moronet8_cart_tileset));
+    moronet8_printf("font bank %u selected\n", id);
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_select_tileset(moronet8_cart *cart, moronet8_u8 id)
+{
+    moronet8_cart_chunk *chunk = moronet8_card_find_bank(cart, MORONET8_CART_CHUNK_TILESET, id);
+    if (!chunk)
+    {
+        return;
+    }
+
+    memcpy(&cart->data.tileset, &((moronet8_cart_tileset_chunk *)chunk)->tileset, sizeof(moronet8_cart_tileset));
+    moronet8_printf("tileset bank %u selected\n", id);
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_select_code(moronet8_cart *cart, moronet8_u8 id)
+{
+    moronet8_cart_chunk *chunk = moronet8_card_find_bank(cart, MORONET8_CART_CHUNK_CODE, id);
+    if (!chunk)
+    {
+        return;
+    }
+
+    memcpy(&cart->data.code, &((moronet8_cart_code_chunk *)chunk)->code, sizeof(moronet8_cart_code));
+    moronet8_printf("code bank %u selected\n", id);
+}
