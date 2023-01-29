@@ -7,6 +7,10 @@
 #include "api/api_type.h"
 #include "network/session_state.h"
 
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
