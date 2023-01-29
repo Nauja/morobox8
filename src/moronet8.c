@@ -449,7 +449,7 @@ moronet8_fontset(moronet8 *vm, moronet8_u8 id)
 MORONET8_PUBLIC(void)
 moronet8_print(moronet8 *vm, const char *buf, size_t size, moronet8_s32 x, moronet8_s32 y, moronet8_u8 col)
 {
-    _MORONET8_PRINTF(buf);
+    moronet8_printf(buf);
     for (size_t i = 0; i < size; ++i)
     {
         moronet8_printc(vm, buf[i], x + i * MORONET8_SPRITE_WIDTH, y, col);
@@ -778,13 +778,13 @@ moronet8_state_set(moronet8 *vm, moronet8_state state)
     switch (state)
     {
     case MORONET8_STATE_BIOS:
-        _MORONET8_PRINTF("state BIOS\n");
+        moronet8_printf("state BIOS\n");
         break;
     case MORONET8_STATE_CART:
-        _MORONET8_PRINTF("state CART\n");
+        moronet8_printf("state CART\n");
         break;
     case MORONET8_STATE_OVERLAY:
-        _MORONET8_PRINTF("state OVERLAY\n");
+        moronet8_printf("state OVERLAY\n");
         break;
     default:
         break;
@@ -811,7 +811,7 @@ moronet8_load(moronet8 *vm, const char *cart)
         vm->bios_api.on_cart_loaded(&vm->bios_api);
     }
 #else
-    _MORONET8_PRINTF("load not supported on this platform\n");
+    moronet8_printf("load not supported on this platform\n");
 #endif
 }
 
@@ -826,7 +826,7 @@ moronet8_netsessionstart(moronet8 *vm)
 {
     moronet8_netsessionleave(vm);
 
-    _MORONET8_PRINTF("start net session\n");
+    moronet8_printf("start net session\n");
     vm->session = moronet8_session_host("127.0.0.1");
 }
 
@@ -835,14 +835,14 @@ moronet8_netsessionjoin(moronet8 *vm, const char *host)
 {
     moronet8_netsessionleave(vm);
 
-    _MORONET8_PRINTF("join net session %s\n", host);
+    moronet8_printf("join net session %s\n", host);
     vm->session = moronet8_session_join(host);
 }
 
 MORONET8_PUBLIC(void)
 moronet8_netsessionleave(moronet8 *vm)
 {
-    _MORONET8_PRINTF("leave net session\n");
+    moronet8_printf("leave net session\n");
     if (!vm->session)
     {
         return;
