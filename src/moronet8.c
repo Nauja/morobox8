@@ -332,9 +332,27 @@ moronet8_delete(moronet8 *vm)
 }
 
 MORONET8_PUBLIC(size_t)
+moronet8_color_format(void)
+{
+    return MORONET8_COLOR_FORMAT;
+}
+
+MORONET8_PUBLIC(size_t)
 moronet8_sizeof(void)
 {
     return sizeof(struct moronet8);
+}
+
+MORONET8_PUBLIC(void *)
+moronet8_get_vram(struct moronet8 *vm)
+{
+    return vm->ram.vram;
+}
+
+MORONET8_PUBLIC(void)
+moronet8_set_vram(struct moronet8 *vm, void *buffer)
+{
+    vm->ram.vram = buffer;
 }
 
 static moronet8 *moronet8_load_any(moronet8 *vm, moronet8_api *api, moronet8_cart_data *dst, moronet8_cart_data *src, moronet8_api_type type)
@@ -481,6 +499,13 @@ static void moronet8_set_pixel(moronet8 *vm, moronet8_s32 x, moronet8_s32 y, mor
                        ((c->b & 0xf8) >> 3);
 
     ((moronet8_u16 *)vm->ram.vram)[x + y * MORONET8_SCREEN_WIDTH] = __builtin_bswap16(c16);
+#elif MORONET8_COLOR_FORMAT == MORONET8_COLOR_RGBA
+    moronet8_u32 c32 = ((c->r & 0xf8) << 24) |
+                       ((c->g & 0xfc) << 16) |
+                       ((c->b & 0xf8) >> 8) |
+                       0xFF;
+
+    ((moronet8_u32 *)vm->ram.vram)[x + y * MORONET8_SCREEN_WIDTH] = c32;
 #endif
 }
 

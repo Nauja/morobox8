@@ -4,6 +4,10 @@
 
 #include <SDL.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #if HAVE_STDIO_H
 #include <stdio.h>
 #endif

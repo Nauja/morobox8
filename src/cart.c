@@ -31,6 +31,8 @@ typedef struct moronet8_cart_code_chunk moronet8_cart_code_chunk;
 typedef struct moronet8_cart_tileset moronet8_cart_tileset;
 typedef struct moronet8_cart_tileset_chunk moronet8_cart_tileset_chunk;
 typedef struct moronet8_cart_sprite moronet8_cart_sprite;
+typedef struct moronet8_cart_header moronet8_cart_header;
+typedef struct moronet8_cart_data moronet8_cart_data;
 
 MORONET8_CID_C(moronet8_cart_code_chunk)
 MORONET8_CID_C(moronet8_cart_tileset_chunk)
@@ -38,10 +40,74 @@ MORONET8_CID_C(moronet8_cart_header)
 MORONET8_CID_C(moronet8_cart_data)
 MORONET8_CID_C(moronet8_cart)
 
+#define min(a, b) (a < b ? a : b)
+
 MORONET8_PUBLIC(size_t)
 moronet8_cart_sizeof(void)
 {
     return sizeof(struct moronet8_cart);
+}
+
+MORONET8_PUBLIC(size_t)
+moronet8_cart_data_as_buffer(const moronet8_cart_data *data, void *buffer, size_t size)
+{
+    memcpy(buffer, data, min(sizeof(moronet8_cart_data), size));
+    return sizeof(moronet8_cart_data);
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_data_from_buffer(moronet8_cart_data *data, const void *buffer, size_t size)
+{
+    memcpy(data, buffer, min(sizeof(moronet8_cart_data), size));
+}
+
+MORONET8_PUBLIC(moronet8_cart_header *)
+moronet8_cart_get_header(moronet8_cart *cart)
+{
+    return &cart->header;
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_set_header(moronet8_cart *cart, const moronet8_cart_header *header)
+{
+    memcpy(&cart->header, header, sizeof(moronet8_cart_header));
+}
+
+MORONET8_PUBLIC(moronet8_cart_data *)
+moronet8_cart_get_data(moronet8_cart *cart)
+{
+    return &cart->data;
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_set_data(moronet8_cart *cart, const moronet8_cart_data *data)
+{
+    memcpy(&cart->data, data, sizeof(moronet8_cart_data));
+}
+
+MORONET8_PUBLIC(size_t)
+moronet8_cart_as_buffer(const moronet8_cart *cart, void *buffer, size_t size)
+{
+    memcpy(buffer, cart, min(sizeof(moronet8_cart), size));
+    return sizeof(moronet8_cart);
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_from_buffer(moronet8_cart *cart, const void *buffer, size_t size)
+{
+    memcpy(cart, buffer, min(sizeof(moronet8_cart), size));
+}
+
+MORONET8_PUBLIC(moronet8_lang)
+moronet8_cart_get_lang(moronet8_cart *cart)
+{
+    return cart->data.code.lang;
+}
+
+MORONET8_PUBLIC(void)
+moronet8_cart_set_lang(moronet8_cart *cart, moronet8_lang lang)
+{
+    cart->data.code.lang = lang;
 }
 
 #if MORONET8_FILESYSTEM

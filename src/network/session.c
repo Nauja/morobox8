@@ -1,4 +1,7 @@
 #include "moronet8.h"
+
+#if MORONET8_WEBSOCKETS
+
 #include "network/session_state.h"
 #include "network/packet.h"
 
@@ -410,3 +413,5 @@ void moronet8_session_poll_impl(moronet8_session *session)
     }
     pthread_mutex_unlock(&session->mut);
 }
+
+#endif

@@ -3,6 +3,10 @@
 #include <stddef.h>
 #include <wchar.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 /** Major version of ccmoro8. */
 #define MORONET8_VERSION_MAJOR 0
 /** Minor version of ccmoro8. */
@@ -115,7 +119,7 @@
 
 #ifndef MORONET8_FILESYSTEM
 /* Builds with support for filesystem. */
-#define MORONET8_FILESYSTEM 1
+/* #undef MORONET8_FILESYSTEM */
 #endif
 
 #ifndef MORONET8_MALLOC
@@ -162,7 +166,11 @@
 #define __WINDOWS__
 #endif
 
-#ifdef __WINDOWS__
+#if defined(__EMSCRIPTEN__)
+#define MORONET8_CDECL
+#define MORONET8_STDCALL
+#define MORONET8_PUBLIC(type) type EMSCRIPTEN_KEEPALIVE
+#elif defined(__WINDOWS__)
 #define MORONET8_CDECL __cdecl
 #define MORONET8_STDCALL __stdcall
 

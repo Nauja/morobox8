@@ -139,6 +139,36 @@ extern "C"
     MORONET8_PUBLIC(size_t)
     moronet8_cart_sizeof(void);
 
+    MORONET8_PUBLIC(size_t)
+    moronet8_cart_data_as_buffer(const struct moronet8_cart_data *data, void *buffer, size_t size);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_data_from_buffer(struct moronet8_cart_data *data, const void *buffer, size_t size);
+
+    MORONET8_PUBLIC(struct moronet8_cart_header *)
+    moronet8_cart_get_header(struct moronet8_cart *cart);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_set_header(struct moronet8_cart *cart, const struct moronet8_cart_header *header);
+
+    MORONET8_PUBLIC(struct moronet8_cart_data *)
+    moronet8_cart_get_data(struct moronet8_cart *cart);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_set_data(struct moronet8_cart *cart, const struct moronet8_cart_data *data);
+
+    MORONET8_PUBLIC(size_t)
+    moronet8_cart_as_buffer(const struct moronet8_cart *cart, void *buffer, size_t size);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_from_buffer(struct moronet8_cart *cart, const void *buffer, size_t size);
+
+    MORONET8_PUBLIC(enum moronet8_lang)
+    moronet8_cart_get_lang(struct moronet8_cart *cart);
+
+    MORONET8_PUBLIC(void)
+    moronet8_cart_set_lang(struct moronet8_cart *cart, enum moronet8_lang lang);
+
 #if MORONET8_FILESYSTEM
     MORONET8_PUBLIC(void)
     moronet8_cart_load_file(struct moronet8_cart *cart, const char *path);

@@ -188,7 +188,16 @@ extern "C"
     moronet8_delete(struct moronet8 *vm);
 
     MORONET8_PUBLIC(size_t)
+    moronet8_color_format(void);
+
+    MORONET8_PUBLIC(size_t)
     moronet8_sizeof(void);
+
+    MORONET8_PUBLIC(void *)
+    moronet8_get_vram(struct moronet8 *vm);
+
+    MORONET8_PUBLIC(void)
+    moronet8_set_vram(struct moronet8 *vm, void *buffer);
 
     MORONET8_PUBLIC(struct moronet8 *)
     moronet8_load_bios(struct moronet8 *vm, struct moronet8_cart_data *cart);
