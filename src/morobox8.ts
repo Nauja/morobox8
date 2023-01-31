@@ -74,27 +74,27 @@ class CartData {
             this._ptr = ptr;
         }
         else {
-            this._ptr = morobox8.ccall("moronet8_cart_data_create", "number", null, null);
+            this._ptr = morobox8.ccall("morobox8_cart_data_create", "number", null, null);
         }
     }
 
     init(): void {
-        morobox8.ccall("moronet8_cart_data_init", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_data_init", null, "number", [this.ptr]);
     }
 
     delete(): void {
-        morobox8.ccall("moronet8_cart_data_delete", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_data_delete", null, "number", [this.ptr]);
         this._ptr = undefined;
     }
 
     asBuffer(buffer: Uint8Array): number {
         const ptr = push_array(buffer, buffer.length);
-        return morobox8.ccall("moronet8_cart_data_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        return morobox8.ccall("morobox8_cart_data_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
 
     fromBuffer(buffer: Uint8Array): void {
         const ptr = push_array(buffer, buffer.length);
-        morobox8.ccall("moronet8_cart_data_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        morobox8.ccall("morobox8_cart_data_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
 }
 
@@ -107,19 +107,19 @@ class Cart {
     }
 
     get data(): CartData {
-        return new CartData(morobox8.ccall("moronet8_cart_get_data", "number", "number", [this.ptr]));
+        return new CartData(morobox8.ccall("morobox8_cart_get_data", "number", "number", [this.ptr]));
     }
 
     set data(value: CartData) {
-        morobox8.ccall("moronet8_cart_set_data", null, ["number", "number"], [this.ptr, value.ptr]);
+        morobox8.ccall("morobox8_cart_set_data", null, ["number", "number"], [this.ptr, value.ptr]);
     }
 
     get lang(): Lang {
-        return morobox8.ccall("moronet8_cart_get_lang", "number", "number", [this.ptr]);
+        return morobox8.ccall("morobox8_cart_get_lang", "number", "number", [this.ptr]);
     }
 
     set lang(value: Lang) {
-        morobox8.ccall("moronet8_cart_set_lang", null, ["number", "number"], [this.ptr, value]);
+        morobox8.ccall("morobox8_cart_set_lang", null, ["number", "number"], [this.ptr, value]);
     }
 
     constructor(ptr: number | undefined) {
@@ -127,27 +127,27 @@ class Cart {
             this._ptr = ptr;
         }
         else {
-            this._ptr = morobox8.ccall("moronet8_cart_create", "number", null, null);
+            this._ptr = morobox8.ccall("morobox8_cart_create", "number", null, null);
         }
     }
 
     init(): void {
-        morobox8.ccall("moronet8_cart_init", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_init", null, "number", [this.ptr]);
     }
 
     delete(): void {
-        morobox8.ccall("moronet8_cart_delete", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_delete", null, "number", [this.ptr]);
         this._ptr = undefined;
     }
 
     asBuffer(buffer: Uint8Array): number {
         const ptr = push_array(buffer, buffer.length);
-        return morobox8.ccall("moronet8_cart_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        return morobox8.ccall("morobox8_cart_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
 
     fromBuffer(buffer: Uint8Array): void {
         const ptr = push_array(buffer, buffer.length);
-        morobox8.ccall("moronet8_cart_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        morobox8.ccall("morobox8_cart_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
 }
 
@@ -160,24 +160,24 @@ class VM {
     }
 
     get colorFormat(): ColorFormat {
-        return morobox8.ccall("moronet8_color_format", "number", null, null);
+        return morobox8.ccall("morobox8_color_format", "number", null, null);
     }
 
     get state(): State {
-        return morobox8.ccall("moronet8_state_get", "number", "number", [this.ptr]);
+        return morobox8.ccall("morobox8_state_get", "number", "number", [this.ptr]);
     }
 
     set state(value: State) {
-        morobox8.ccall("moronet8_state_set", null, ["number", "number"], [this.ptr, value]);
+        morobox8.ccall("morobox8_state_set", null, ["number", "number"], [this.ptr, value]);
     }
 
     get vram(): Bus {
-        return morobox8.ccall("moronet8_get_vram", "number", "number", [this.ptr]);
+        return morobox8.ccall("morobox8_get_vram", "number", "number", [this.ptr]);
     }
 
     set vram(value: Bus) {
         //const ptr = push_array(value, value.length);
-        morobox8.ccall("moronet8_set_vram", null, ["number", "number", "number"], [this.ptr, value.ptr, value.length]);
+        morobox8.ccall("morobox8_set_vram", null, ["number", "number", "number"], [this.ptr, value.ptr, value.length]);
     }
 
     constructor(ptr: number | undefined) {
@@ -185,29 +185,29 @@ class VM {
             this._ptr = ptr;
         }
         else {
-            this._ptr = morobox8.ccall("moronet8_create", "number", null, null);
+            this._ptr = morobox8.ccall("morobox8_create", "number", null, null);
         }
     }
 
     init(): void {
-        morobox8.ccall("moronet8_init", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_init", null, "number", [this.ptr]);
     }
 
     delete(): void {
-        morobox8.ccall("moronet8_delete", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_delete", null, "number", [this.ptr]);
         this._ptr = undefined;
     }
 
     loadBios(cart: CartData): boolean {
-        return morobox8.ccall("moronet8_load_bios", "number", ["number", "number"], [this.ptr, cart.ptr]);
+        return morobox8.ccall("morobox8_load_bios", "number", ["number", "number"], [this.ptr, cart.ptr]);
     }
 
     loadCart(cart: CartData): boolean {
-        return morobox8.ccall("moronet8_load_cart", "number", ["number", "number"], [this.ptr, cart.ptr]);
+        return morobox8.ccall("morobox8_load_cart", "number", ["number", "number"], [this.ptr, cart.ptr]);
     }
 
     tick(deltaTime: number): void {
-        morobox8.ccall("moronet8_tick", null, ["number", "number"], [this.ptr, deltaTime]);
+        morobox8.ccall("morobox8_tick", null, ["number", "number"], [this.ptr, deltaTime]);
     }
 }
 

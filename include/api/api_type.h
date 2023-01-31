@@ -5,10 +5,10 @@ extern "C"
 {
 #endif
 
-    enum moronet8_api_type
+    enum morobox8_api_type
     {
-        MORONET8_API_BIOS = 0x1,
-        MORONET8_API_CART = 0x2
+        MOROBOX8_API_BIOS = 0x1,
+        MOROBOX8_API_CART = 0x2
     };
 
 #ifdef __cplusplus

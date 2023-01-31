@@ -1,6 +1,6 @@
-#include "moronet8.h"
+#include "morobox8.h"
 
-#if MORONET8_WEBSOCKETS
+#if MOROBOX8_WEBSOCKETS
 
 #include "network/session_state.h"
 #include "network/packet.h"
@@ -19,93 +19,93 @@
 typedef struct lws_ring lws_ring;
 typedef struct lws_context lws_context;
 typedef struct lws_context_creation_info lws_context_creation_info;
-typedef enum moronet8_session_state moronet8_session_state;
-typedef struct moronet8_client moronet8_client;
-typedef struct moronet8_hooks moronet8_hooks;
-typedef struct moronet8_packet_reader moronet8_packet_reader;
-typedef struct moronet8_packet_writer moronet8_packet_writer;
+typedef enum morobox8_session_state morobox8_session_state;
+typedef struct morobox8_client morobox8_client;
+typedef struct morobox8_hooks morobox8_hooks;
+typedef struct morobox8_packet_reader morobox8_packet_reader;
+typedef struct morobox8_packet_writer morobox8_packet_writer;
 typedef enum ws_event ws_event;
 typedef struct ws ws;
 typedef struct ws_connect_options ws_connect_options;
 typedef struct ws_client ws_client;
 
 #define RING_DEPTH 10
-#define MORONET8_TRUE 1
-#define MORONET8_FALSE 0
-#define MORONET8_BUFFER_SIZE 1024
+#define MOROBOX8_TRUE 1
+#define MOROBOX8_FALSE 0
+#define MOROBOX8_BUFFER_SIZE 1024
 
-typedef struct moronet8_packet
+typedef struct morobox8_packet
 {
-    moronet8_u8 data[MORONET8_BUFFER_SIZE];
+    morobox8_u8 data[MOROBOX8_BUFFER_SIZE];
     size_t size;
-} moronet8_packet;
+} morobox8_packet;
 
-typedef struct moronet8_player
+typedef struct morobox8_player
 {
     lws_ring *wait_receive_queue;
     lws_ring *receive_queue;
     /* Queued packets to send to client. */
     lws_ring *wait_send_queue;
     lws_ring *send_queue;
-} moronet8_player;
+} morobox8_player;
 
-typedef struct moronet8_session
+typedef struct morobox8_session
 {
     pthread_t thread;
     pthread_mutex_t mut;
-    moronet8_session_state state;
-    moronet8_u32 user_id;
+    morobox8_session_state state;
+    morobox8_u32 user_id;
     int host;
     lws_context *context;
     ws *socket;
     ws_client *client;
-    moronet8_player *player;
-} moronet8_session;
+    morobox8_player *player;
+} morobox8_session;
 
 /* There can be only one session at a time. */
-static moronet8_session session = {
-    .state = MORONET8_SESSION_CLOSED,
-    .host = MORONET8_FALSE,
+static morobox8_session session = {
+    .state = MOROBOX8_SESSION_CLOSED,
+    .host = MOROBOX8_FALSE,
     .context = NULL,
     .client = NULL,
     .player = NULL};
 
 /* Packet reader/writer. */
-static moronet8_u8 writer_buffer[MORONET8_BUFFER_SIZE];
-static moronet8_packet_reader packet_reader = {
+static morobox8_u8 writer_buffer[MOROBOX8_BUFFER_SIZE];
+static morobox8_packet_reader packet_reader = {
     .buf = writer_buffer,
-    .size = MORONET8_BUFFER_SIZE,
+    .size = MOROBOX8_BUFFER_SIZE,
     .offset = 0};
-static moronet8_packet_writer packet_writer = {
+static morobox8_packet_writer packet_writer = {
     .buf = writer_buffer,
-    .size = MORONET8_BUFFER_SIZE,
+    .size = MOROBOX8_BUFFER_SIZE,
     .offset = 0};
 
-static int moronet8_player_init(moronet8_player *player)
+static int morobox8_player_init(morobox8_player *player)
 {
     player->wait_receive_queue = lws_ring_create(
-        sizeof(moronet8_packet),
+        sizeof(morobox8_packet),
         RING_DEPTH,
         NULL);
 
     if (!player->wait_receive_queue)
     {
-        return MORONET8_FALSE;
+        return MOROBOX8_FALSE;
     }
 
     player->receive_queue = lws_ring_create(
-        sizeof(moronet8_packet),
+        sizeof(morobox8_packet),
         RING_DEPTH,
         NULL);
 
     if (!player->receive_queue)
     {
         lws_ring_destroy(player->wait_receive_queue);
-        return MORONET8_FALSE;
+        return MOROBOX8_FALSE;
     }
 
     player->wait_send_queue = lws_ring_create(
-        sizeof(moronet8_packet),
+        sizeof(morobox8_packet),
         RING_DEPTH,
         NULL);
 
@@ -113,11 +113,11 @@ static int moronet8_player_init(moronet8_player *player)
     {
         lws_ring_destroy(player->wait_receive_queue);
         lws_ring_destroy(player->receive_queue);
-        return MORONET8_FALSE;
+        return MOROBOX8_FALSE;
     }
 
     player->send_queue = lws_ring_create(
-        sizeof(moronet8_packet),
+        sizeof(morobox8_packet),
         RING_DEPTH,
         NULL);
 
@@ -126,64 +126,64 @@ static int moronet8_player_init(moronet8_player *player)
         lws_ring_destroy(player->wait_receive_queue);
         lws_ring_destroy(player->receive_queue);
         lws_ring_destroy(player->wait_send_queue);
-        return MORONET8_FALSE;
+        return MOROBOX8_FALSE;
     }
 
-    return MORONET8_TRUE;
+    return MOROBOX8_TRUE;
 }
 
 static void
-moronet8_session_connected(void)
+morobox8_session_connected(void)
 {
     printf("connected to server\n");
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, session.host ? MORONET8_PACKET_CREATE_SESSION : MORONET8_PACKET_JOIN_SESSION);
-    moronet8_packet_write_u32(&packet_writer, session.user_id);
+    morobox8_packet_write_u8(&packet_writer, session.host ? MOROBOX8_PACKET_CREATE_SESSION : MOROBOX8_PACKET_JOIN_SESSION);
+    morobox8_packet_write_u32(&packet_writer, session.user_id);
     ws_send(session.client, packet_writer.buf, packet_writer.offset);
 }
 
 static void
-moronet8_session_created(void)
+morobox8_session_created(void)
 {
     printf("session created\n");
 }
 
 static void
-moronet8_session_joined(void)
+morobox8_session_joined(void)
 {
     printf("session joined\n");
-    session.state = session.host ? MORONET8_SESSION_HOSTING : MORONET8_SESSION_JOINED;
+    session.state = session.host ? MOROBOX8_SESSION_HOSTING : MOROBOX8_SESSION_JOINED;
 }
 
 static void
-moronet8_session_left(void)
+morobox8_session_left(void)
 {
     printf("session left\n");
 }
 
-static int moronet8_session_callback(ws_client *client, ws_event event, void *user)
+static int morobox8_session_callback(ws_client *client, ws_event event, void *user)
 {
-    moronet8_player *player = (moronet8_player *)user;
-    moronet8_packet packet;
+    morobox8_player *player = (morobox8_player *)user;
+    morobox8_packet packet;
 
     switch (event)
     {
     case LIBWS_EVENT_CONNECTED:
         lwsl_user("LIBWS_EVENT_CONNECTED\n");
-        if (!moronet8_player_init(player))
+        if (!morobox8_player_init(player))
         {
             return 1;
         }
 
         session.client = client;
         session.player = player;
-        moronet8_session_connected();
+        morobox8_session_connected();
         break;
 
     case LIBWS_EVENT_RECEIVED:
     {
         /* Copy incoming data to read buffer */
-        size_t len = ws_receive(client, packet_writer.buf, MORONET8_BUFFER_SIZE);
+        size_t len = ws_receive(client, packet_writer.buf, MOROBOX8_BUFFER_SIZE);
         if (len > packet_writer.size)
         {
             lwsl_user("OOM: can't copy packet\n");
@@ -193,20 +193,20 @@ static int moronet8_session_callback(ws_client *client, ws_event event, void *us
         /* Read packet type and get remaining data */
         packet_reader.offset = 0;
         packet_reader.size = len;
-        moronet8_u8 packet_type = moronet8_packet_read_u8(&packet_reader);
+        morobox8_u8 packet_type = morobox8_packet_read_u8(&packet_reader);
 
         switch (packet_type)
         {
-        case MORONET8_PACKET_SESSION_CREATED:
-            moronet8_session_created();
+        case MOROBOX8_PACKET_SESSION_CREATED:
+            morobox8_session_created();
             break;
-        case MORONET8_PACKET_SESSION_JOINED:
-            moronet8_session_joined();
+        case MOROBOX8_PACKET_SESSION_JOINED:
+            morobox8_session_joined();
             break;
-        case MORONET8_PACKET_SESSION_LEFT:
-            moronet8_session_left();
+        case MOROBOX8_PACKET_SESSION_LEFT:
+            morobox8_session_left();
             break;
-        case MORONET8_PACKET_DATA:
+        case MOROBOX8_PACKET_DATA:
             memcpy(
                 packet.data,
                 &packet_reader.buf[packet_reader.offset],
@@ -217,7 +217,7 @@ static int moronet8_session_callback(ws_client *client, ws_event event, void *us
             lws_ring_insert(player->wait_receive_queue, &packet, 1);
             pthread_mutex_unlock(&session.mut);
             break;
-        case MORONET8_PACKET_KEEP_ALIVE:
+        case MOROBOX8_PACKET_KEEP_ALIVE:
             break;
         default:
             /* Should not happen */
@@ -240,14 +240,14 @@ static int moronet8_session_callback(ws_client *client, ws_event event, void *us
     return 0;
 }
 
-static void moronet8_session_dispatch_send(moronet8_session *session)
+static void morobox8_session_dispatch_send(morobox8_session *session)
 {
     if (!session->player)
     {
         return;
     }
 
-    const moronet8_packet *pmsg = lws_ring_get_element(session->player->send_queue, 0);
+    const morobox8_packet *pmsg = lws_ring_get_element(session->player->send_queue, 0);
     if (!pmsg)
     {
         return;
@@ -257,7 +257,7 @@ static void moronet8_session_dispatch_send(moronet8_session *session)
     lws_ring_consume(session->player->send_queue, NULL, NULL, 1);
 }
 
-static void moronet8_session_move_queue(moronet8_session *session, lws_ring *from, lws_ring *to)
+static void morobox8_session_move_queue(morobox8_session *session, lws_ring *from, lws_ring *to)
 {
     const void *pmsg = lws_ring_get_element(from, 0);
     if (!pmsg)
@@ -269,21 +269,21 @@ static void moronet8_session_move_queue(moronet8_session *session, lws_ring *fro
     lws_ring_consume(from, NULL, NULL, 1);
 }
 
-static void *moronet8_session_thread(void *arg)
+static void *morobox8_session_thread(void *arg)
 {
-    moronet8_session *session = (moronet8_session *)arg;
+    morobox8_session *session = (morobox8_session *)arg;
 
     while (1)
     {
         pthread_mutex_lock(&session->mut);
-        moronet8_session_dispatch_send(session);
+        morobox8_session_dispatch_send(session);
         pthread_mutex_unlock(&session->mut);
         lws_service(session->context, 1);
     }
     return NULL;
 }
 
-static moronet8_session *moronet8_session_create(const char *host)
+static morobox8_session *morobox8_session_create(const char *host)
 {
     lws_set_log_level(LLL_USER | LLL_ERR | LLL_WARN | LLL_NOTICE, NULL);
     lws_context_creation_info info;
@@ -301,8 +301,8 @@ static moronet8_session *moronet8_session_create(const char *host)
     options.context = context;
     options.host = host;
     options.port = 2345;
-    options.callback = &moronet8_session_callback;
-    options.per_client_data_size = sizeof(moronet8_player);
+    options.callback = &morobox8_session_callback;
+    options.per_client_data_size = sizeof(morobox8_player);
     ws *socket = ws_connect(&options);
     if (!socket)
     {
@@ -311,43 +311,43 @@ static moronet8_session *moronet8_session_create(const char *host)
         return NULL;
     }
 
-    session.state = MORONET8_SESSION_CLOSED;
+    session.state = MOROBOX8_SESSION_CLOSED;
     session.context = context;
     session.socket = socket;
 
-    pthread_create(&session.thread, NULL, moronet8_session_thread, (void *)&session);
+    pthread_create(&session.thread, NULL, morobox8_session_thread, (void *)&session);
     return &session;
 }
 
-moronet8_session *moronet8_session_host_impl(const char *host)
+morobox8_session *morobox8_session_host_impl(const char *host)
 {
-    if (!moronet8_session_create(host))
+    if (!morobox8_session_create(host))
     {
         return NULL;
     }
 
-    session.state = MORONET8_SESSION_CREATING;
+    session.state = MOROBOX8_SESSION_CREATING;
     session.user_id = 1;
-    session.host = MORONET8_TRUE;
+    session.host = MOROBOX8_TRUE;
     return &session;
 }
 
-moronet8_session *moronet8_session_join_impl(const char *host)
+morobox8_session *morobox8_session_join_impl(const char *host)
 {
-    if (!moronet8_session_create(host))
+    if (!morobox8_session_create(host))
     {
         return NULL;
     }
 
-    session.state = MORONET8_SESSION_JOINING;
+    session.state = MOROBOX8_SESSION_JOINING;
     session.user_id = 2;
-    session.host = MORONET8_FALSE;
+    session.host = MOROBOX8_FALSE;
     return &session;
 }
 
-void moronet8_session_delete_impl(moronet8_session *session)
+void morobox8_session_delete_impl(morobox8_session *session)
 {
-    session->state = MORONET8_SESSION_CLOSED;
+    session->state = MOROBOX8_SESSION_CLOSED;
     if (session->context)
     {
         lws_context_destroy(session->context);
@@ -358,12 +358,12 @@ void moronet8_session_delete_impl(moronet8_session *session)
     }
 }
 
-moronet8_session_state moronet8_session_state_get_impl(moronet8_session *session)
+morobox8_session_state morobox8_session_state_get_impl(morobox8_session *session)
 {
     return session->state;
 }
 
-void moronet8_session_broadcast_impl(moronet8_session *session, const void *buf, size_t size)
+void morobox8_session_broadcast_impl(morobox8_session *session, const void *buf, size_t size)
 {
     if (!session->player)
     {
@@ -371,23 +371,23 @@ void moronet8_session_broadcast_impl(moronet8_session *session, const void *buf,
     }
 
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, MORONET8_PACKET_BROADCAST);
+    morobox8_packet_write_u8(&packet_writer, MOROBOX8_PACKET_BROADCAST);
     memcpy(&packet_writer.buf[packet_writer.offset], buf, size);
     packet_writer.offset += size;
-    moronet8_packet packet;
+    morobox8_packet packet;
     memcpy(&packet.data, packet_writer.buf, packet_writer.offset);
     packet.size = packet_writer.offset;
     lws_ring_insert(session->player->wait_send_queue, &packet, 1);
 }
 
-size_t moronet8_session_receive_impl(moronet8_session *session, void *buf, size_t size)
+size_t morobox8_session_receive_impl(morobox8_session *session, void *buf, size_t size)
 {
     if (!session->player)
     {
         return 0;
     }
 
-    const moronet8_packet *pmsg = lws_ring_get_element(session->player->receive_queue, 0);
+    const morobox8_packet *pmsg = lws_ring_get_element(session->player->receive_queue, 0);
     if (!pmsg)
     {
         return 0;
@@ -403,13 +403,13 @@ size_t moronet8_session_receive_impl(moronet8_session *session, void *buf, size_
     return len;
 }
 
-void moronet8_session_poll_impl(moronet8_session *session)
+void morobox8_session_poll_impl(morobox8_session *session)
 {
     pthread_mutex_lock(&session->mut);
     if (session->player)
     {
-        moronet8_session_move_queue(session, session->player->wait_receive_queue, session->player->receive_queue);
-        moronet8_session_move_queue(session, session->player->wait_send_queue, session->player->send_queue);
+        morobox8_session_move_queue(session, session->player->wait_receive_queue, session->player->receive_queue);
+        morobox8_session_move_queue(session, session->player->wait_send_queue, session->player->send_queue);
     }
     pthread_mutex_unlock(&session->mut);
 }

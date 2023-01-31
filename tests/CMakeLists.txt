@@ -1,4 +1,4 @@
-project(moronet8-tests C)
+project(morobox8-tests C)
 
 # CMocka
 set(CMOCKA_SOURCE_DIR "${CMAKE_SOURCE_DIR}/vendor/cmocka")
@@ -31,34 +31,34 @@ add_dependencies(cmocka_vendor cmocka)
 message("CMOCKA_BINARY_DIR=${CMOCKA_BINARY_DIR}")
 message("CMOCKA_LIBRARY=${CMOCKA_LIBRARY}")
 
-# moronet8 tests
+# morobox8 tests
 set(_TESTS
-    test_moronet8
+    test_morobox8
 )
 
 include_directories(${CMOCKA_INCLUDE_DIR}
                     ${LIBFS_INCLUDE_DIR}
                     ${CMAKE_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${MORONET8_INCLUDE_DIR})
+                    ${MOROBOX8_INCLUDE_DIR})
                     
 foreach(_TEST ${_TESTS})
-    add_cmocka_test(moronet8-${_TEST}
+    add_cmocka_test(morobox8-${_TEST}
                     SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${_TEST}.c
                     COMPILE_OPTIONS
                         ${DEFAULT_C_COMPILE_FLAGS}
                         -DMORO8_WITH_CLI=OFF
-                    LINK_LIBRARIES ${CMOCKA_LIBRARY} ${LIBFS_LIBRARY} ${MORONET8_STATIC_LIB}
+                    LINK_LIBRARIES ${CMOCKA_LIBRARY} ${LIBFS_LIBRARY} ${MOROBOX8_STATIC_LIB}
     )
     
-    target_include_directories(moronet8-${_TEST}
+    target_include_directories(morobox8-${_TEST}
         PRIVATE 
             ${CMAKE_BINARY_DIR}
             ${CMOCKA_BINARY_DIR}
             ${LIBFS_BINARY_DIR}
-            ${MORONET8_INCLUDE_DIR})
+            ${MOROBOX8_INCLUDE_DIR})
     
     # Link cmocka and libfs
-    add_dependencies(moronet8-${_TEST} cmocka libfs)
+    add_dependencies(morobox8-${_TEST} cmocka libfs)
 
 endforeach()

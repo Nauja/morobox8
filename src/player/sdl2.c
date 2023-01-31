@@ -1,13 +1,13 @@
-#include "moronet8.h"
+#include "morobox8.h"
 
 #include <stdio.h>
 #include <SDL.h>
 
-#define MORONET8_WINDOW_TITLE "moronet8"
-#define MORONET8_WINDOW_SCALE 2
-#define MORONET8_FRAMERATE 30
-#define MORONET8_SAMPLERATE 1
-#define MORONET8_SAMPLE_CHANNELS 1
+#define MOROBOX8_WINDOW_TITLE "morobox8"
+#define MOROBOX8_WINDOW_SCALE 2
+#define MOROBOX8_FRAMERATE 30
+#define MOROBOX8_SAMPLERATE 1
+#define MOROBOX8_SAMPLE_CHANNELS 1
 
 struct state
 {
@@ -18,20 +18,20 @@ struct state
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef enum moronet8_lang moronet8_lang;
-typedef struct moronet8_cart moronet8_cart;
-typedef struct moronet8 moronet8;
+typedef enum morobox8_lang morobox8_lang;
+typedef struct morobox8_cart morobox8_cart;
+typedef struct morobox8 morobox8;
 
-int moronet8_run_player(moronet8 *vm)
+int morobox8_run_player(morobox8 *vm)
 {
-    moronet8_u16 frame_buffer[MORONET8_SCREEN_WIDTH * MORONET8_SCREEN_HEIGHT];
+    morobox8_u16 frame_buffer[MOROBOX8_SCREEN_WIDTH * MOROBOX8_SCREEN_HEIGHT];
     vm->ram.vram = (void *)&frame_buffer[0];
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
-    SDL_Window *window = SDL_CreateWindow(MORONET8_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, MORONET8_SCREEN_WIDTH * MORONET8_WINDOW_SCALE, MORONET8_SCREEN_HEIGHT * MORONET8_WINDOW_SCALE, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window *window = SDL_CreateWindow(MOROBOX8_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, MOROBOX8_SCREEN_WIDTH * MOROBOX8_WINDOW_SCALE, MOROBOX8_SCREEN_HEIGHT * MOROBOX8_WINDOW_SCALE, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR565, SDL_TEXTUREACCESS_STREAMING, MORONET8_SCREEN_WIDTH, MORONET8_SCREEN_HEIGHT);
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR565, SDL_TEXTUREACCESS_STREAMING, MOROBOX8_SCREEN_WIDTH, MOROBOX8_SCREEN_HEIGHT);
 
     struct state state;
     state.quit = 1 == 0;
@@ -39,8 +39,8 @@ int moronet8_run_player(moronet8 *vm)
         state.mutex = SDL_CreateMutex();
     }
 
-    const moronet8_u64 Delta = SDL_GetPerformanceFrequency() / MORONET8_FRAMERATE;
-    moronet8_u64 nextTick = SDL_GetPerformanceCounter();
+    const morobox8_u64 Delta = SDL_GetPerformanceFrequency() / MOROBOX8_FRAMERATE;
+    morobox8_u64 nextTick = SDL_GetPerformanceCounter();
 
     while (!state.quit)
     {
@@ -70,35 +70,35 @@ int moronet8_run_player(moronet8 *vm)
             static const struct
             {
                 SDL_Scancode code;
-                enum moronet8_button button;
+                enum morobox8_button button;
             } Keys[] =
                 {
-                    {SDL_SCANCODE_LEFT, MORONET8_BUTTON_LEFT},
-                    {SDL_SCANCODE_RIGHT, MORONET8_BUTTON_RIGHT},
-                    {SDL_SCANCODE_UP, MORONET8_BUTTON_UP},
-                    {SDL_SCANCODE_DOWN, MORONET8_BUTTON_DOWN},
+                    {SDL_SCANCODE_LEFT, MOROBOX8_BUTTON_LEFT},
+                    {SDL_SCANCODE_RIGHT, MOROBOX8_BUTTON_RIGHT},
+                    {SDL_SCANCODE_UP, MOROBOX8_BUTTON_UP},
+                    {SDL_SCANCODE_DOWN, MOROBOX8_BUTTON_DOWN},
 
-                    {SDL_SCANCODE_A, MORONET8_BUTTON_LEFT},
-                    {SDL_SCANCODE_D, MORONET8_BUTTON_RIGHT},
-                    {SDL_SCANCODE_Z, MORONET8_BUTTON_UP},
-                    {SDL_SCANCODE_S, MORONET8_BUTTON_DOWN},
-                    {SDL_SCANCODE_SPACE, MORONET8_BUTTON_A},
-                    {SDL_SCANCODE_TAB, MORONET8_BUTTON_START},
+                    {SDL_SCANCODE_A, MOROBOX8_BUTTON_LEFT},
+                    {SDL_SCANCODE_D, MOROBOX8_BUTTON_RIGHT},
+                    {SDL_SCANCODE_Z, MOROBOX8_BUTTON_UP},
+                    {SDL_SCANCODE_S, MOROBOX8_BUTTON_DOWN},
+                    {SDL_SCANCODE_SPACE, MOROBOX8_BUTTON_A},
+                    {SDL_SCANCODE_TAB, MOROBOX8_BUTTON_START},
                 };
 
-            for (moronet8_u32 i = 0; i < SDL_arraysize(Keys); i++)
+            for (morobox8_u32 i = 0; i < SDL_arraysize(Keys); i++)
             {
                 if (keyboard[Keys[i].code])
                 {
-                    ((moronet8_u8 *)&vm->ram.buttons)[0] |= 1 << Keys[i].button;
+                    ((morobox8_u8 *)&vm->ram.buttons)[0] |= 1 << Keys[i].button;
                 }
             }
         }
 
         SDL_LockMutex(state.mutex);
         {
-            moronet8_netsessionpoll(vm);
-            moronet8_tick(vm, 1.0f / MORONET8_FRAMERATE);
+            morobox8_netsessionpoll(vm);
+            morobox8_tick(vm, 1.0f / MOROBOX8_FRAMERATE);
         }
         SDL_UnlockMutex(state.mutex);
 
@@ -106,21 +106,21 @@ int moronet8_run_player(moronet8 *vm)
 
         {
             void *pixels = NULL;
-            moronet8_s32 pitch = 0;
+            morobox8_s32 pitch = 0;
             SDL_Rect destination;
             SDL_LockTexture(texture, NULL, &pixels, &pitch);
-            SDL_memcpy(pixels, (const void *)frame_buffer, pitch * MORONET8_SCREEN_HEIGHT);
+            SDL_memcpy(pixels, (const void *)frame_buffer, pitch * MOROBOX8_SCREEN_HEIGHT);
             SDL_UnlockTexture(texture);
 
             // Render the image in the proper aspect ratio.
             {
-                moronet8_s32 windowWidth, windowHeight;
+                morobox8_s32 windowWidth, windowHeight;
                 SDL_GetWindowSize(window, &windowWidth, &windowHeight);
-                float widthRatio = (float)windowWidth / MORONET8_SCREEN_WIDTH;
-                float heightRatio = (float)windowHeight / MORONET8_SCREEN_HEIGHT;
+                float widthRatio = (float)windowWidth / MOROBOX8_SCREEN_WIDTH;
+                float heightRatio = (float)windowHeight / MOROBOX8_SCREEN_HEIGHT;
                 float optimalSize = widthRatio < heightRatio ? widthRatio : heightRatio;
-                destination.w = (moronet8_s32)(MORONET8_SCREEN_WIDTH * optimalSize);
-                destination.h = (moronet8_s32)(MORONET8_SCREEN_HEIGHT * optimalSize);
+                destination.w = (morobox8_s32)(MOROBOX8_SCREEN_WIDTH * optimalSize);
+                destination.h = (morobox8_s32)(MOROBOX8_SCREEN_HEIGHT * optimalSize);
                 destination.x = windowWidth / 2 - destination.w / 2;
                 destination.y = windowHeight / 2 - destination.h / 2;
             }
@@ -131,10 +131,10 @@ int moronet8_run_player(moronet8 *vm)
         SDL_RenderPresent(renderer);
 
         {
-            moronet8_s64 delay = (nextTick += Delta) - SDL_GetPerformanceCounter();
+            morobox8_s64 delay = (nextTick += Delta) - SDL_GetPerformanceCounter();
 
             if (delay > 0)
-                SDL_Delay((moronet8_u32)(delay * 1000 / SDL_GetPerformanceFrequency()));
+                SDL_Delay((morobox8_u32)(delay * 1000 / SDL_GetPerformanceFrequency()));
         }
     }
 
@@ -145,7 +145,7 @@ int moronet8_run_player(moronet8 *vm)
 
     // SDL_free(cart);
 
-    MORONET8_FREE(vm->screen);
+    MOROBOX8_FREE(vm->screen);
     vm->screen = NULL;
 
     return 0;

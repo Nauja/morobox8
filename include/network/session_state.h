@@ -5,14 +5,14 @@ extern "C"
 {
 #endif
 
-    enum moronet8_session_state
+    enum morobox8_session_state
     {
-        MORONET8_SESSION_CLOSED,
-        MORONET8_SESSION_CREATING,
-        MORONET8_SESSION_HOSTING,
-        MORONET8_SESSION_JOINING,
-        MORONET8_SESSION_JOINED,
-        MORONET8_SESSION_LEAVING
+        MOROBOX8_SESSION_CLOSED,
+        MOROBOX8_SESSION_CREATING,
+        MOROBOX8_SESSION_HOSTING,
+        MOROBOX8_SESSION_JOINING,
+        MOROBOX8_SESSION_JOINED,
+        MOROBOX8_SESSION_LEAVING
     };
 
 #ifdef __cplusplus

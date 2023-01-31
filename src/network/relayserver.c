@@ -8,8 +8,8 @@
 
 typedef struct lws_context lws_context;
 typedef struct lws_ring lws_ring;
-typedef struct moronet8_packet_reader moronet8_packet_reader;
-typedef struct moronet8_packet_writer moronet8_packet_writer;
+typedef struct morobox8_packet_reader morobox8_packet_reader;
+typedef struct morobox8_packet_writer morobox8_packet_writer;
 typedef enum ws_event ws_event;
 typedef struct ws ws;
 typedef struct ws_listen_options ws_listen_options;
@@ -23,7 +23,7 @@ typedef struct ws_client ws_client;
 
 typedef struct relayserver_packet
 {
-    moronet8_u8 data[RELAYSERVER_BUFFER_SIZE];
+    morobox8_u8 data[RELAYSERVER_BUFFER_SIZE];
     size_t size;
 } relayserver_packet;
 
@@ -44,7 +44,7 @@ typedef struct relayserver_client_data
     ws_client *client;
     lws_ring *receive_queue;
     /* Id. */
-    moronet8_u32 user_id;
+    morobox8_u32 user_id;
     /* Is pending. */
     int pending;
     /* Is the host. */
@@ -71,13 +71,13 @@ static relayserver_session session = {
     .num_clients = 0};
 
 /* Packet reader/writer. */
-static moronet8_u8 reader_buffer[RELAYSERVER_BUFFER_SIZE];
-static moronet8_u8 writer_buffer[RELAYSERVER_BUFFER_SIZE];
-static moronet8_packet_reader packet_reader = {
+static morobox8_u8 reader_buffer[RELAYSERVER_BUFFER_SIZE];
+static morobox8_u8 writer_buffer[RELAYSERVER_BUFFER_SIZE];
+static morobox8_packet_reader packet_reader = {
     .buf = reader_buffer,
     .size = RELAYSERVER_BUFFER_SIZE,
     .offset = 0};
-static moronet8_packet_writer packet_writer = {
+static morobox8_packet_writer packet_writer = {
     .buf = writer_buffer,
     .size = RELAYSERVER_BUFFER_SIZE,
     .offset = 0};
@@ -125,13 +125,13 @@ static int relayserver_session_remove_pending_client(relayserver_client_data *cl
 }
 
 /* Send a packet to a client. */
-static void relayserver_session_send_raw(relayserver_client_data *client, const moronet8_u8 *data, size_t size)
+static void relayserver_session_send_raw(relayserver_client_data *client, const morobox8_u8 *data, size_t size)
 {
     ws_send(client->client, data, size);
 }
 
 /* Send a packet to all clients. */
-static void relayserver_session_broadcast_raw(relayserver_client_data *except, const moronet8_u8 *data, size_t size)
+static void relayserver_session_broadcast_raw(relayserver_client_data *except, const morobox8_u8 *data, size_t size)
 {
     for (relayserver_client_data *it = session.clients.next; it != NULL; it = it->next)
     {
@@ -143,19 +143,19 @@ static void relayserver_session_broadcast_raw(relayserver_client_data *except, c
 }
 
 /* Send a packet to a client. */
-static void relayserver_session_send_to(relayserver_client_data *client, const moronet8_u8 *data, size_t size)
+static void relayserver_session_send_to(relayserver_client_data *client, const morobox8_u8 *data, size_t size)
 {
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, MORONET8_PACKET_DATA);
+    morobox8_packet_write_u8(&packet_writer, MOROBOX8_PACKET_DATA);
     memcpy(&packet_writer.buf[packet_writer.offset], data, size);
     ws_send(client->client, packet_writer.buf, packet_writer.offset + size);
 }
 
 /* Send a packet to all clients. */
-static void relayserver_session_broadcast(relayserver_client_data *except, const moronet8_u8 *data, size_t size)
+static void relayserver_session_broadcast(relayserver_client_data *except, const morobox8_u8 *data, size_t size)
 {
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, MORONET8_PACKET_DATA);
+    morobox8_packet_write_u8(&packet_writer, MOROBOX8_PACKET_DATA);
     memcpy(&packet_writer.buf[packet_writer.offset], data, size);
     relayserver_session_broadcast_raw(except, packet_writer.buf, packet_writer.offset + size);
 }
@@ -164,9 +164,9 @@ static void relayserver_session_broadcast(relayserver_client_data *except, const
 static void relayserver_session_notify_joined(relayserver_client_data *client)
 {
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, MORONET8_PACKET_SESSION_JOINED);
-    moronet8_packet_write_u8(&packet_writer, client->host);
-    moronet8_packet_write_u32(&packet_writer, client->user_id);
+    morobox8_packet_write_u8(&packet_writer, MOROBOX8_PACKET_SESSION_JOINED);
+    morobox8_packet_write_u8(&packet_writer, client->host);
+    morobox8_packet_write_u32(&packet_writer, client->user_id);
     relayserver_session_broadcast_raw(NULL, packet_writer.buf, packet_writer.offset);
 }
 
@@ -174,8 +174,8 @@ static void relayserver_session_notify_joined(relayserver_client_data *client)
 static void relayserver_session_notify_left(relayserver_client_data *client)
 {
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, MORONET8_PACKET_SESSION_LEFT);
-    moronet8_packet_write_u32(&packet_writer, client->user_id);
+    morobox8_packet_write_u8(&packet_writer, MOROBOX8_PACKET_SESSION_LEFT);
+    morobox8_packet_write_u32(&packet_writer, client->user_id);
     relayserver_session_broadcast_raw(NULL, packet_writer.buf, packet_writer.offset);
 }
 
@@ -208,7 +208,7 @@ static int relayserver_session_remove_client(relayserver_client_data *client)
     return RELAYSERVER_FALSE;
 }
 
-static relayserver_client_data *relayserver_session_find_client(moronet8_u32 id)
+static relayserver_client_data *relayserver_session_find_client(morobox8_u32 id)
 {
     if (id == 0)
     {
@@ -229,7 +229,7 @@ static relayserver_client_data *relayserver_session_find_client(moronet8_u32 id)
 /* Authenticate the client. */
 static int relayserver_session_auth(relayserver_client_data *client)
 {
-    client->user_id = moronet8_packet_read_u32(&packet_reader);
+    client->user_id = morobox8_packet_read_u32(&packet_reader);
     printf("user %d connected\n", client->user_id);
     return RELAYSERVER_TRUE;
 }
@@ -250,7 +250,7 @@ static int relayserver_session_create(relayserver_client_data *client)
 
     /* Notify success */
     packet_writer.offset = 0;
-    moronet8_packet_write_u8(&packet_writer, MORONET8_PACKET_SESSION_CREATED);
+    morobox8_packet_write_u8(&packet_writer, MOROBOX8_PACKET_SESSION_CREATED);
     relayserver_session_send_raw(client, (void *)packet_writer.buf, packet_writer.offset);
 
     relayserver_session_remove_pending_client(client);
@@ -301,41 +301,41 @@ relayserver_callback(ws_client *client, enum ws_event event, void *user)
 
         /* Read packet type and get remaining data */
         packet_reader.offset = 0;
-        moronet8_u8 packet_type = moronet8_packet_read_u8(&packet_reader);
+        morobox8_u8 packet_type = morobox8_packet_read_u8(&packet_reader);
         relayserver_client_data *other_client = NULL;
 
         switch (packet_type)
         {
-        case MORONET8_PACKET_CREATE_SESSION:
+        case MOROBOX8_PACKET_CREATE_SESSION:
             if (!relayserver_session_create(client_data))
             {
                 lwsl_err("failed to create session\n");
                 return 1;
             }
             break;
-        case MORONET8_PACKET_JOIN_SESSION:
+        case MOROBOX8_PACKET_JOIN_SESSION:
             if (!relayserver_session_join(client_data))
             {
                 lwsl_err("failed to join session\n");
                 return 1;
             }
             break;
-        case MORONET8_PACKET_LEAVE_SESSION:
+        case MOROBOX8_PACKET_LEAVE_SESSION:
             if (relayserver_session_remove_client(client_data))
             {
                 lwsl_err("failed to remove client\n");
                 return 1;
             }
             break;
-        case MORONET8_PACKET_BROADCAST:
+        case MOROBOX8_PACKET_BROADCAST:
             relayserver_session_broadcast(
                 client_data,
                 packet_reader.buf + packet_reader.offset,
                 len - packet_reader.offset);
             break;
-        case MORONET8_PACKET_SEND_TO:
+        case MOROBOX8_PACKET_SEND_TO:
             other_client = relayserver_session_find_client(
-                moronet8_packet_read_u32(&packet_reader));
+                morobox8_packet_read_u32(&packet_reader));
             if (!other_client)
             {
                 return 0;
@@ -346,7 +346,7 @@ relayserver_callback(ws_client *client, enum ws_event event, void *user)
                 packet_reader.buf + packet_reader.offset,
                 len - packet_reader.offset);
             break;
-        case MORONET8_PACKET_KEEP_ALIVE:
+        case MOROBOX8_PACKET_KEEP_ALIVE:
             break;
         default:
             /* Should not happen */

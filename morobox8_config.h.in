@@ -8,30 +8,30 @@
 #endif
 
 /** Major version of ccmoro8. */
-#define MORONET8_VERSION_MAJOR 0
+#define MOROBOX8_VERSION_MAJOR @MOROBOX8_VERSION_MAJOR@
 /** Minor version of ccmoro8. */
-#define MORONET8_VERSION_MINOR 0
+#define MOROBOX8_VERSION_MINOR @MOROBOX8_VERSION_MINOR@
 /** Patch version of ccmoro8. */
-#define MORONET8_VERSION_PATCH 1
+#define MOROBOX8_VERSION_PATCH @MOROBOX8_VERSION_PATCH@
 
 /* Define to 1 if you have the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H
-#define HAVE_STDIO_H 1
+#cmakedefine HAVE_STDIO_H 1
 #endif
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #ifndef HAVE_STDLIB_H
-#define HAVE_STDLIB_H 1
+#cmakedefine HAVE_STDLIB_H 1
 #endif
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #ifndef HAVE_STDINT_H
-#define HAVE_STDINT_H 1
+#cmakedefine HAVE_STDINT_H 1
 #endif
 
 /* Define to 1 if you have the <string.h> header file. */
 #ifndef HAVE_STRING_H
-#define HAVE_STRING_H 1
+#cmakedefine HAVE_STRING_H 1
 #endif
 
 /* Define to 1 if you have the <stdarg.h> header file. */
@@ -56,73 +56,73 @@
 
 /* Define to 1 if you have the `free' function. */
 #ifndef HAVE_FREE
-#define HAVE_FREE 1
+#cmakedefine HAVE_FREE 1
 #endif
 
 /* Define to 1 if you have the `malloc' function. */
 #ifndef HAVE_MALLOC
-#define HAVE_MALLOC 1
+#cmakedefine HAVE_MALLOC 1
 #endif
 
-#ifndef MORONET8_DOXYGEN
+#ifndef MOROBOX8_DOXYGEN
 /* Builds Doxygen doc. */
-/* #undef MORONET8_DOXYGEN */
+#cmakedefine MOROBOX8_DOXYGEN 1
 #endif
 
-#ifndef MORONET8_MINIMALIST
+#ifndef MOROBOX8_MINIMALIST
 /**
  * Strips extra features from moro8.
  *
- * This implicitly sets MORONET8_WITH_PARSER=0 and MORONET8_WITH_HANDLERS=0.
+ * This implicitly sets MOROBOX8_WITH_PARSER=0 and MOROBOX8_WITH_HANDLERS=0.
  */
-/* #undef MORONET8_MINIMALIST */
+#cmakedefine MOROBOX8_MINIMALIST 1
 #endif
 
-#ifndef MORONET8_EXTENDED_OPCODES
+#ifndef MOROBOX8_EXTENDED_OPCODES
 /**
  * Includes extended opcodes specific to moro8.
  */
-/* #undef MORONET8_EXTENDED_OPCODES */
+#cmakedefine MOROBOX8_EXTENDED_OPCODES 1
 #endif
 
-#ifndef MORONET8_WITH_PARSER
+#ifndef MOROBOX8_WITH_PARSER
 /**
  * Builds moro8 with support for parser.
  *
  * @note
- * Parser is not available when MORONET8_MINIMALIST is defined.
+ * Parser is not available when MOROBOX8_MINIMALIST is defined.
  *
  */
-/* #undef MORONET8_WITH_PARSER */
+#cmakedefine MOROBOX8_WITH_PARSER 1
 #endif
 
-#ifndef MORONET8_WITH_HANDLERS
+#ifndef MOROBOX8_WITH_HANDLERS
 /**
  * Builds moro8 with support for custom opcodes.
  *
  * @note
- * Handlers are not available when MORONET8_MINIMALIST is defined.
+ * Handlers are not available when MOROBOX8_MINIMALIST is defined.
  *
  */
-/* #undef MORONET8_WITH_HANDLERS */
+#cmakedefine MOROBOX8_WITH_HANDLERS 1
 #endif
 
-#ifndef MORONET8_LUA_API
+#ifndef MOROBOX8_LUA_API
 /* Builds with Lua APi. */
-#define MORONET8_LUA_API 1
+#cmakedefine MOROBOX8_LUA_API 1
 #endif
 
-#ifndef MORONET8_JS_API
+#ifndef MOROBOX8_JS_API
 /* Builds with JS APi. */
-#define MORONET8_JS_API 1
+#cmakedefine MOROBOX8_JS_API 1
 #endif
 
-#ifndef MORONET8_FILESYSTEM
+#ifndef MOROBOX8_FILESYSTEM
 /* Builds with support for filesystem. */
-/* #undef MORONET8_FILESYSTEM */
+#cmakedefine MOROBOX8_FILESYSTEM 1
 #endif
 
-#ifndef MORONET8_MALLOC
+#ifndef MOROBOX8_MALLOC
 #ifdef HAVE_MALLOC
 /**
  * Defines the malloc function used by moro8 at compile time.
@@ -133,16 +133,16 @@
  *     // do something
  * }
  *
- * #define MORONET8_MALLOC my_malloc
+ * #define MOROBOX8_MALLOC my_malloc
  * @endcode
  */
-#define MORONET8_MALLOC malloc
+#define MOROBOX8_MALLOC malloc
 #else
-#define MORONET8_MALLOC(size) NULL
+#define MOROBOX8_MALLOC(size) NULL
 #endif
 #endif
 
-#ifndef MORONET8_FREE
+#ifndef MOROBOX8_FREE
 #ifdef HAVE_FREE
 /**
  * Defines the free function used by moro8 at compile time.
@@ -153,12 +153,12 @@
  *     // do something
  * }
  *
- * #define MORONET8_FREE my_free
+ * #define MOROBOX8_FREE my_free
  * @endcode
  */
-#define MORONET8_FREE free
+#define MOROBOX8_FREE free
 #else
-#define MORONET8_FREE(ptr)
+#define MOROBOX8_FREE(ptr)
 #endif
 #endif
 
@@ -167,32 +167,32 @@
 #endif
 
 #if defined(__EMSCRIPTEN__)
-#define MORONET8_CDECL
-#define MORONET8_STDCALL
-#define MORONET8_PUBLIC(type) type EMSCRIPTEN_KEEPALIVE
+#define MOROBOX8_CDECL
+#define MOROBOX8_STDCALL
+#define MOROBOX8_PUBLIC(type) type EMSCRIPTEN_KEEPALIVE
 #elif defined(__WINDOWS__)
-#define MORONET8_CDECL __cdecl
-#define MORONET8_STDCALL __stdcall
+#define MOROBOX8_CDECL __cdecl
+#define MOROBOX8_STDCALL __stdcall
 
 /* export symbols by default, this is necessary for copy pasting the C and header file */
-#if !defined(MORONET8_HIDE_SYMBOLS) && !defined(MORONET8_IMPORT_SYMBOLS) && !defined(MORONET8_EXPORT_SYMBOLS)
-#define MORONET8_EXPORT_SYMBOLS
+#if !defined(MOROBOX8_HIDE_SYMBOLS) && !defined(MOROBOX8_IMPORT_SYMBOLS) && !defined(MOROBOX8_EXPORT_SYMBOLS)
+#define MOROBOX8_EXPORT_SYMBOLS
 #endif
 
-#if defined(MORONET8_HIDE_SYMBOLS)
-#define MORONET8_PUBLIC(type) type MORONET8_STDCALL
-#elif defined(MORONET8_EXPORT_SYMBOLS)
-#define MORONET8_PUBLIC(type) __declspec(dllexport) type MORONET8_STDCALL
-#elif defined(MORONET8_IMPORT_SYMBOLS)
-#define MORONET8_PUBLIC(type) __declspec(dllimport) type MORONET8_STDCALL
+#if defined(MOROBOX8_HIDE_SYMBOLS)
+#define MOROBOX8_PUBLIC(type) type MOROBOX8_STDCALL
+#elif defined(MOROBOX8_EXPORT_SYMBOLS)
+#define MOROBOX8_PUBLIC(type) __declspec(dllexport) type MOROBOX8_STDCALL
+#elif defined(MOROBOX8_IMPORT_SYMBOLS)
+#define MOROBOX8_PUBLIC(type) __declspec(dllimport) type MOROBOX8_STDCALL
 #endif
 #else /* !__WINDOWS__ */
-#define MORONET8_CDECL
-#define MORONET8_STDCALL
+#define MOROBOX8_CDECL
+#define MOROBOX8_STDCALL
 
 #if (defined(__GNUC__) || defined(__SUNPRO_CC) || defined(__SUNPRO_C)) && defined(CJSON_API_VISIBILITY)
-#define MORONET8_PUBLIC(type) __attribute__((visibility("default"))) type
+#define MOROBOX8_PUBLIC(type) __attribute__((visibility("default"))) type
 #else
-#define MORONET8_PUBLIC(type) type
+#define MOROBOX8_PUBLIC(type) type
 #endif
 #endif

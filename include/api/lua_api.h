@@ -1,6 +1,6 @@
 #pragma once
 
-#include "moronet8_config.h"
+#include "morobox8_config.h"
 #include "api/api_type.h"
 
 #ifdef __cplusplus
@@ -8,13 +8,13 @@ extern "C"
 {
 #endif
 
-#if MORONET8_LUA_API
+#if MOROBOX8_LUA_API
 
-    struct moronet8;
-    struct moronet8_api;
+    struct morobox8;
+    struct morobox8_api;
 
-    MORONET8_PUBLIC(struct moronet8_api *)
-    moronet8_lua_api_init(struct moronet8_api *api, struct moronet8 *vm, enum moronet8_api_type type);
+    MOROBOX8_PUBLIC(struct morobox8_api *)
+    morobox8_lua_api_init(struct morobox8_api *api, struct morobox8 *vm, enum morobox8_api_type type);
 
 #endif
 

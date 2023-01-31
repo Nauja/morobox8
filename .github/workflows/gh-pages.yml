@@ -32,8 +32,8 @@ jobs:
           cd build
           emcmake cmake ..
           cmake --build .
-          cp moronet8.js ../gh-pages/moronet8.js
-          cp moronet8.wasm ../gh-pages/moronet8.wasm
+          cp morobox8.js ../gh-pages/morobox8.js
+          cp morobox8.wasm ../gh-pages/morobox8.wasm
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.3
         with:

@@ -1,21 +1,21 @@
-#include "moronet8.h"
+#include "morobox8.h"
 
-#if MORONET8_JS_API
+#if MOROBOX8_JS_API
 
 #include "api/js_api.h"
 
-typedef enum moronet8_api_type moronet8_api_type;
-typedef struct moronet8_api moronet8_api;
-typedef struct moronet8 moronet8;
+typedef enum morobox8_api_type morobox8_api_type;
+typedef struct morobox8_api morobox8_api;
+typedef struct morobox8 morobox8;
 
-static void moronet8_js_api_free(moronet8_api *api)
+static void morobox8_js_api_free(morobox8_api *api)
 {
 }
 
-MORONET8_PUBLIC(moronet8_api *)
-moronet8_js_api_init(moronet8_api *api, moronet8 *vm, moronet8_api_type type)
+MOROBOX8_PUBLIC(morobox8_api *)
+morobox8_js_api_init(morobox8_api *api, morobox8 *vm, morobox8_api_type type)
 {
-    api->free = &moronet8_js_api_free;
+    api->free = &morobox8_js_api_free;
     return api;
 }
 
