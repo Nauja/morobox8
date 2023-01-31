@@ -19,11 +19,27 @@ typedef struct morobox8_cart morobox8_cart;
 typedef struct morobox8 morobox8;
 
 // clang-format off
-#define MOROBOX8_CMD_PARAMS_LIST(macro)                                                     \
+#define MOROBOX8_PACK_PARAMS_LIST(macro)                                                     \
+    macro(join,         char*,  STRING,     "",         "host ip:port")                     \
+    macro(scale,        int,    INTEGER,    "=<int>",   "main window scale")                \
+    macro(version,      int,    BOOLEAN,    "",         "print program version")
+
+#define MOROBOX8_UNPACK_PARAMS_LIST(macro)                                                     \
+    macro(join,         char*,  STRING,     "",         "host ip:port")                     \
+    macro(scale,        int,    INTEGER,    "=<int>",   "main window scale")                \
+    macro(version,      int,    BOOLEAN,    "",         "print program version")
+
+#define MOROBOX8_RUN_PARAMS_LIST(macro)                                                     \
     macro(join,         char*,  STRING,     "",         "host ip:port")                     \
     macro(scale,        int,    INTEGER,    "=<int>",   "main window scale")                \
     macro(version,      int,    BOOLEAN,    "",         "print program version")
 // clang-format on
+
+static const char *const usage[] =
+    {
+        MOROBOX8_NAME " command [options]",
+        NULL,
+};
 
 typedef struct
 {
@@ -33,7 +49,31 @@ typedef struct
 #undef MOROBOX8_CMD_PARAMS_DEF
 } morobox8_args;
 
-static morobox8_args morobox8_parse_args(int argc, char **argv)
+static morobox8_args command_pack(int argc, char **argv)
+{
+    morobox8_args args = {.scale = 2};
+
+    struct argparse_option options[] =
+        {
+            OPT_HELP(),
+#define MOROBOX8_CMD_PARAMS_DEF(name, ctype, type, post, help) OPT_##type('\0', #name, &args.name, help, NULL, 0, 0),
+            MOROBOX8_PACK_PARAMS_LIST(MOROBOX8_CMD_PARAMS_DEF)
+#undef MOROBOX8_CMD_PARAMS_DEF
+                OPT_END(),
+        };
+
+    struct argparse argparse;
+    argparse_init(&argparse, options, usage, 0);
+    argparse_describe(&argparse, "\n" MOROBOX8_NAME " startup options:", NULL);
+    argc = argparse_parse(&argparse, argc, (const char **)argv);
+
+    if (argc == 1)
+        args.cart = argv[0];
+
+    return args;
+}
+
+static int command_run(int argc, char **argv)
 {
     static const char *const usage[] =
         {
@@ -61,6 +101,51 @@ static morobox8_args morobox8_parse_args(int argc, char **argv)
         args.cart = argv[0];
 
     return args;
+}
+
+typedef struct command_struct
+{
+    const char *cmd;
+    int (*fn)(int, const char **);
+} command_struct;
+
+static command_struct commands[] = {
+    {"pack", command_pack},
+    {"unpack", command_unpack},
+    {"run", command_run},
+    {NULL, NULL}};
+
+static int morobox8_parse_args(int argc, char **argv)
+{
+    morobox8_args args = {.scale = 2};
+
+    struct argparse_option options[] =
+        {
+            OPT_HELP(),
+            OPT_END(),
+        };
+
+    struct argparse argparse;
+    argparse_init(&argparse, options, usage, 0);
+    argc = argparse_parse(&argparse, argc, (const char **)argv);
+    if (argc < 1)
+    {
+        argparse_usage(&argparse);
+        return -1;
+    }
+
+    command_struct *cmd = &commands[0];
+    while (cmd->cmd)
+    {
+        if (!strcmp(cmd->cmd, argv[0]))
+        {
+            return cmd->fn(argc, argv);
+        }
+
+        cmd++;
+    }
+
+    return 0;
 }
 
 int morobox8_run_player(morobox8 *vm);
