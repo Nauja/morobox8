@@ -1,0 +1,41 @@
+name: GitHub Pages
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+
+jobs:
+  gh-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Build
+        run: |
+          npm i
+          npm run build
+          mkdir -p build
+          cd build
+          emcmake cmake ..
+          cmake --build .
+          cp moronet8.js ../gh-pages/moronet8.js
+          cp moronet8.wasm ../gh-pages/moronet8.wasm
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.3
+        with:
+          branch: gh-pages
+          folder: gh-pages
