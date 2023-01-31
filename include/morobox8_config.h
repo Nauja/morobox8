@@ -8,65 +8,65 @@
 #endif
 
 /** Major version of ccmoro8. */
-#define MOROBOX8_VERSION_MAJOR @MOROBOX8_VERSION_MAJOR@
+#define MOROBOX8_VERSION_MAJOR 0
 /** Minor version of ccmoro8. */
-#define MOROBOX8_VERSION_MINOR @MOROBOX8_VERSION_MINOR@
+#define MOROBOX8_VERSION_MINOR 0
 /** Patch version of ccmoro8. */
-#define MOROBOX8_VERSION_PATCH @MOROBOX8_VERSION_PATCH@
+#define MOROBOX8_VERSION_PATCH 1
 
 /* Define to 1 if you have the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H
-#cmakedefine HAVE_STDIO_H 1
+#define HAVE_STDIO_H 1
 #endif
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #ifndef HAVE_STDLIB_H
-#cmakedefine HAVE_STDLIB_H 1
+#define HAVE_STDLIB_H 1
 #endif
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #ifndef HAVE_STDINT_H
-#cmakedefine HAVE_STDINT_H 1
+#define HAVE_STDINT_H 1
 #endif
 
 /* Define to 1 if you have the <string.h> header file. */
 #ifndef HAVE_STRING_H
-#cmakedefine HAVE_STRING_H 1
+#define HAVE_STRING_H 1
 #endif
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #ifndef HAVE_STDARG_H
-#cmakedefine HAVE_STDARG_H 1
+#define HAVE_STDARG_H 1
 #endif
 
 /* Define to 1 if you have the <iostream.h> header file. */
 #ifndef HAVE_IOSTREAM_H
-#cmakedefine HAVE_IOSTREAM_H 1
+/* #undef HAVE_IOSTREAM_H */
 #endif
 
 /* Define to 1 if you have the <memory.h> header file. */
 #ifndef HAVE_MEMORY_H
-#cmakedefine HAVE_MEMORY_H 1
+#define HAVE_MEMORY_H 1
 #endif
 
 /* Define to 1 if you have the <math.h> header file. */
 #ifndef HAVE_MATH_H
-#cmakedefine HAVE_MATH_H 1
+#define HAVE_MATH_H 1
 #endif
 
 /* Define to 1 if you have the `free' function. */
 #ifndef HAVE_FREE
-#cmakedefine HAVE_FREE 1
+#define HAVE_FREE 1
 #endif
 
 /* Define to 1 if you have the `malloc' function. */
 #ifndef HAVE_MALLOC
-#cmakedefine HAVE_MALLOC 1
+#define HAVE_MALLOC 1
 #endif
 
 #ifndef MOROBOX8_DOXYGEN
 /* Builds Doxygen doc. */
-#cmakedefine MOROBOX8_DOXYGEN 1
+/* #undef MOROBOX8_DOXYGEN */
 #endif
 
 #ifndef MOROBOX8_MINIMALIST
@@ -75,14 +75,14 @@
  *
  * This implicitly sets MOROBOX8_WITH_PARSER=0 and MOROBOX8_WITH_HANDLERS=0.
  */
-#cmakedefine MOROBOX8_MINIMALIST 1
+/* #undef MOROBOX8_MINIMALIST */
 #endif
 
 #ifndef MOROBOX8_EXTENDED_OPCODES
 /**
  * Includes extended opcodes specific to moro8.
  */
-#cmakedefine MOROBOX8_EXTENDED_OPCODES 1
+/* #undef MOROBOX8_EXTENDED_OPCODES */
 #endif
 
 #ifndef MOROBOX8_WITH_PARSER
@@ -93,7 +93,7 @@
  * Parser is not available when MOROBOX8_MINIMALIST is defined.
  *
  */
-#cmakedefine MOROBOX8_WITH_PARSER 1
+/* #undef MOROBOX8_WITH_PARSER */
 #endif
 
 #ifndef MOROBOX8_WITH_HANDLERS
@@ -104,26 +104,26 @@
  * Handlers are not available when MOROBOX8_MINIMALIST is defined.
  *
  */
-#cmakedefine MOROBOX8_WITH_HANDLERS 1
+/* #undef MOROBOX8_WITH_HANDLERS */
 #endif
 
 #ifndef MOROBOX8_LUA_API
 /* Builds with Lua APi. */
-#cmakedefine MOROBOX8_LUA_API 1
+#define MOROBOX8_LUA_API 1
 #endif
 
 #ifndef MOROBOX8_JS_API
 /* Builds with JS APi. */
-#cmakedefine MOROBOX8_JS_API 1
+#define MOROBOX8_JS_API 1
 #endif
 
 #ifndef MOROBOX8_FILESYSTEM
 /* Builds with support for filesystem. */
-#cmakedefine MOROBOX8_FILESYSTEM 1
+#define MOROBOX8_FILESYSTEM 1
 #endif
 
 #ifndef MOROBOX8_WEBSOCKETS
-#cmakedefine MOROBOX8_WEBSOCKETS 1
+#define MOROBOX8_WEBSOCKETS 1
 #endif
 
 #ifndef MOROBOX8_MALLOC

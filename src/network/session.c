@@ -1,4 +1,5 @@
 #include "morobox8.h"
+#include "morobox8_config.h"
 
 #if MOROBOX8_WEBSOCKETS
 
