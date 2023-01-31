@@ -36,9 +36,9 @@ static const char *const usage[] = {
     macro(version,      int,    BOOLEAN,    "",         "print program version")
 
 #define MOROBOX8_CMD_LIST(macro) \
-    macro(pack, PACK, command_pack) \
-    macro(unpack, UNPACK, command_unpack) \
-    macro(run, RUN, command_run)
+    macro(pack, PACK) \
+    macro(unpack, UNPACK) \
+    macro(run, RUN)
 // clang-format on
 
 typedef struct
@@ -81,7 +81,7 @@ static int handle_run(morobox8_run_args *args)
 }
 
 #define MOROBOX8_CMD_PARAMS_DEF(name, ctype, type, post, help) OPT_##type('\0', #name, &args.name, help, 0, 0, 0),
-#define MOROBOX8_CMD_DEF(name, NAME, fun)                              \
+#define MOROBOX8_CMD_DEF(name, NAME)                                   \
     static int parse_command_##name(int argc, char **argv)             \
     {                                                                  \
         morobox8_##name##_args args;                                   \
@@ -120,8 +120,8 @@ typedef struct command_struct
     int (*fn)(int, char **);
 } command_struct;
 
-#define MOROBOX8_CMD_DEF(name, NAME, fun) \
-    {#name, parse_##fun},
+#define MOROBOX8_CMD_DEF(name, NAME) \
+    {#name, parse_command_##name},
 static command_struct commands[] = {
     MOROBOX8_CMD_LIST(MOROBOX8_CMD_DEF){NULL, NULL}};
 #undef MOROBOX8_CMD_DEF
