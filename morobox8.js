@@ -1617,7 +1617,7 @@ function createExportWrapper(name, fixedasm) {
   };
 }
 
-var wasmBinaryFile = 'moronet8.wasm';
+var wasmBinaryFile = 'morobox8.wasm';
 if (!isDataURI(wasmBinaryFile)) {
   wasmBinaryFile = locateFile(wasmBinaryFile);
 }
@@ -2049,403 +2049,403 @@ var asm = createWasm();
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
 
 /** @type {function(...*):?} */
-var _moronet8_printf = Module["_moronet8_printf"] = createExportWrapper("moronet8_printf");
+var _morobox8_printf = Module["_morobox8_printf"] = createExportWrapper("morobox8_printf");
 
 /** @type {function(...*):?} */
-var _moronet8_lua_api_init = Module["_moronet8_lua_api_init"] = createExportWrapper("moronet8_lua_api_init");
+var _morobox8_lua_api_init = Module["_morobox8_lua_api_init"] = createExportWrapper("morobox8_lua_api_init");
 
 /** @type {function(...*):?} */
-var _moronet8_fontget = Module["_moronet8_fontget"] = createExportWrapper("moronet8_fontget");
+var _morobox8_fontget = Module["_morobox8_fontget"] = createExportWrapper("morobox8_fontget");
 
 /** @type {function(...*):?} */
-var _moronet8_fontset = Module["_moronet8_fontset"] = createExportWrapper("moronet8_fontset");
+var _morobox8_fontset = Module["_morobox8_fontset"] = createExportWrapper("morobox8_fontset");
 
 /** @type {function(...*):?} */
-var _moronet8_colorget = Module["_moronet8_colorget"] = createExportWrapper("moronet8_colorget");
+var _morobox8_colorget = Module["_morobox8_colorget"] = createExportWrapper("morobox8_colorget");
 
 /** @type {function(...*):?} */
-var _moronet8_print = Module["_moronet8_print"] = createExportWrapper("moronet8_print");
+var _morobox8_print = Module["_morobox8_print"] = createExportWrapper("morobox8_print");
 
 /** @type {function(...*):?} */
-var _moronet8_btn = Module["_moronet8_btn"] = createExportWrapper("moronet8_btn");
+var _morobox8_btn = Module["_morobox8_btn"] = createExportWrapper("morobox8_btn");
 
 /** @type {function(...*):?} */
-var _moronet8_btnp = Module["_moronet8_btnp"] = createExportWrapper("moronet8_btnp");
+var _morobox8_btnp = Module["_morobox8_btnp"] = createExportWrapper("morobox8_btnp");
 
 /** @type {function(...*):?} */
-var _moronet8_dt = Module["_moronet8_dt"] = createExportWrapper("moronet8_dt");
+var _morobox8_dt = Module["_morobox8_dt"] = createExportWrapper("morobox8_dt");
 
 /** @type {function(...*):?} */
-var _moronet8_sin = Module["_moronet8_sin"] = createExportWrapper("moronet8_sin");
+var _morobox8_sin = Module["_morobox8_sin"] = createExportWrapper("morobox8_sin");
 
 /** @type {function(...*):?} */
-var _moronet8_cos = Module["_moronet8_cos"] = createExportWrapper("moronet8_cos");
+var _morobox8_cos = Module["_morobox8_cos"] = createExportWrapper("morobox8_cos");
 
 /** @type {function(...*):?} */
-var _moronet8_cls = Module["_moronet8_cls"] = createExportWrapper("moronet8_cls");
+var _morobox8_cls = Module["_morobox8_cls"] = createExportWrapper("morobox8_cls");
 
 /** @type {function(...*):?} */
-var _moronet8_colorset = Module["_moronet8_colorset"] = createExportWrapper("moronet8_colorset");
+var _morobox8_colorset = Module["_morobox8_colorset"] = createExportWrapper("morobox8_colorset");
 
 /** @type {function(...*):?} */
-var _moronet8_line = Module["_moronet8_line"] = createExportWrapper("moronet8_line");
+var _morobox8_line = Module["_morobox8_line"] = createExportWrapper("morobox8_line");
 
 /** @type {function(...*):?} */
-var _moronet8_rect = Module["_moronet8_rect"] = createExportWrapper("moronet8_rect");
+var _morobox8_rect = Module["_morobox8_rect"] = createExportWrapper("morobox8_rect");
 
 /** @type {function(...*):?} */
-var _moronet8_rectfill = Module["_moronet8_rectfill"] = createExportWrapper("moronet8_rectfill");
+var _morobox8_rectfill = Module["_morobox8_rectfill"] = createExportWrapper("morobox8_rectfill");
 
 /** @type {function(...*):?} */
-var _moronet8_tilesetget = Module["_moronet8_tilesetget"] = createExportWrapper("moronet8_tilesetget");
+var _morobox8_tilesetget = Module["_morobox8_tilesetget"] = createExportWrapper("morobox8_tilesetget");
 
 /** @type {function(...*):?} */
-var _moronet8_tilesetset = Module["_moronet8_tilesetset"] = createExportWrapper("moronet8_tilesetset");
+var _morobox8_tilesetset = Module["_morobox8_tilesetset"] = createExportWrapper("morobox8_tilesetset");
 
 /** @type {function(...*):?} */
-var _moronet8_spr = Module["_moronet8_spr"] = createExportWrapper("moronet8_spr");
+var _morobox8_spr = Module["_morobox8_spr"] = createExportWrapper("morobox8_spr");
 
 /** @type {function(...*):?} */
-var _moronet8_paltget = Module["_moronet8_paltget"] = createExportWrapper("moronet8_paltget");
+var _morobox8_paltget = Module["_morobox8_paltget"] = createExportWrapper("morobox8_paltget");
 
 /** @type {function(...*):?} */
-var _moronet8_paltset = Module["_moronet8_paltset"] = createExportWrapper("moronet8_paltset");
+var _morobox8_paltset = Module["_morobox8_paltset"] = createExportWrapper("morobox8_paltset");
 
 /** @type {function(...*):?} */
-var _moronet8_codeget = Module["_moronet8_codeget"] = createExportWrapper("moronet8_codeget");
+var _morobox8_codeget = Module["_morobox8_codeget"] = createExportWrapper("morobox8_codeget");
 
 /** @type {function(...*):?} */
-var _moronet8_codeset = Module["_moronet8_codeset"] = createExportWrapper("moronet8_codeset");
+var _morobox8_codeset = Module["_morobox8_codeset"] = createExportWrapper("morobox8_codeset");
 
 /** @type {function(...*):?} */
-var _moronet8_peek = Module["_moronet8_peek"] = createExportWrapper("moronet8_peek");
+var _morobox8_peek = Module["_morobox8_peek"] = createExportWrapper("morobox8_peek");
 
 /** @type {function(...*):?} */
-var _moronet8_poke = Module["_moronet8_poke"] = createExportWrapper("moronet8_poke");
+var _morobox8_poke = Module["_morobox8_poke"] = createExportWrapper("morobox8_poke");
 
 /** @type {function(...*):?} */
-var _moronet8_pset = Module["_moronet8_pset"] = createExportWrapper("moronet8_pset");
+var _morobox8_pset = Module["_morobox8_pset"] = createExportWrapper("morobox8_pset");
 
 /** @type {function(...*):?} */
-var _moronet8_pget = Module["_moronet8_pget"] = createExportWrapper("moronet8_pget");
+var _morobox8_pget = Module["_morobox8_pget"] = createExportWrapper("morobox8_pget");
 
 /** @type {function(...*):?} */
-var _moronet8_nethost = Module["_moronet8_nethost"] = createExportWrapper("moronet8_nethost");
+var _morobox8_nethost = Module["_morobox8_nethost"] = createExportWrapper("morobox8_nethost");
 
 /** @type {function(...*):?} */
-var _moronet8_netclient = Module["_moronet8_netclient"] = createExportWrapper("moronet8_netclient");
+var _morobox8_netclient = Module["_morobox8_netclient"] = createExportWrapper("morobox8_netclient");
 
 /** @type {function(...*):?} */
-var _moronet8_netspget = Module["_moronet8_netspget"] = createExportWrapper("moronet8_netspget");
+var _morobox8_netspget = Module["_morobox8_netspget"] = createExportWrapper("morobox8_netspget");
 
 /** @type {function(...*):?} */
-var _moronet8_netspset = Module["_moronet8_netspset"] = createExportWrapper("moronet8_netspset");
+var _morobox8_netspset = Module["_morobox8_netspset"] = createExportWrapper("morobox8_netspset");
 
 /** @type {function(...*):?} */
-var _moronet8_netpush = Module["_moronet8_netpush"] = createExportWrapper("moronet8_netpush");
+var _morobox8_netpush = Module["_morobox8_netpush"] = createExportWrapper("morobox8_netpush");
 
 /** @type {function(...*):?} */
-var _moronet8_netpop = Module["_moronet8_netpop"] = createExportWrapper("moronet8_netpop");
+var _morobox8_netpop = Module["_morobox8_netpop"] = createExportWrapper("morobox8_netpop");
 
 /** @type {function(...*):?} */
-var _moronet8_pktspget = Module["_moronet8_pktspget"] = createExportWrapper("moronet8_pktspget");
+var _morobox8_pktspget = Module["_morobox8_pktspget"] = createExportWrapper("morobox8_pktspget");
 
 /** @type {function(...*):?} */
-var _moronet8_pktspset = Module["_moronet8_pktspset"] = createExportWrapper("moronet8_pktspset");
+var _morobox8_pktspset = Module["_morobox8_pktspset"] = createExportWrapper("morobox8_pktspset");
 
 /** @type {function(...*):?} */
-var _moronet8_pktpush = Module["_moronet8_pktpush"] = createExportWrapper("moronet8_pktpush");
+var _morobox8_pktpush = Module["_morobox8_pktpush"] = createExportWrapper("morobox8_pktpush");
 
 /** @type {function(...*):?} */
-var _moronet8_pktpop = Module["_moronet8_pktpop"] = createExportWrapper("moronet8_pktpop");
+var _morobox8_pktpop = Module["_morobox8_pktpop"] = createExportWrapper("morobox8_pktpop");
 
 /** @type {function(...*):?} */
-var _moronet8_pktsend = Module["_moronet8_pktsend"] = createExportWrapper("moronet8_pktsend");
+var _morobox8_pktsend = Module["_morobox8_pktsend"] = createExportWrapper("morobox8_pktsend");
 
 /** @type {function(...*):?} */
-var _moronet8_state_get = Module["_moronet8_state_get"] = createExportWrapper("moronet8_state_get");
+var _morobox8_state_get = Module["_morobox8_state_get"] = createExportWrapper("morobox8_state_get");
 
 /** @type {function(...*):?} */
-var _moronet8_state_set = Module["_moronet8_state_set"] = createExportWrapper("moronet8_state_set");
+var _morobox8_state_set = Module["_morobox8_state_set"] = createExportWrapper("morobox8_state_set");
 
 /** @type {function(...*):?} */
-var _moronet8_load = Module["_moronet8_load"] = createExportWrapper("moronet8_load");
+var _morobox8_load = Module["_morobox8_load"] = createExportWrapper("morobox8_load");
 
 /** @type {function(...*):?} */
-var _moronet8_netsessionstate = Module["_moronet8_netsessionstate"] = createExportWrapper("moronet8_netsessionstate");
+var _morobox8_netsessionstate = Module["_morobox8_netsessionstate"] = createExportWrapper("morobox8_netsessionstate");
 
 /** @type {function(...*):?} */
-var _moronet8_netsessionstart = Module["_moronet8_netsessionstart"] = createExportWrapper("moronet8_netsessionstart");
+var _morobox8_netsessionstart = Module["_morobox8_netsessionstart"] = createExportWrapper("morobox8_netsessionstart");
 
 /** @type {function(...*):?} */
-var _moronet8_netsessionjoin = Module["_moronet8_netsessionjoin"] = createExportWrapper("moronet8_netsessionjoin");
+var _morobox8_netsessionjoin = Module["_morobox8_netsessionjoin"] = createExportWrapper("morobox8_netsessionjoin");
 
 /** @type {function(...*):?} */
-var _moronet8_netsessionleave = Module["_moronet8_netsessionleave"] = createExportWrapper("moronet8_netsessionleave");
+var _morobox8_netsessionleave = Module["_morobox8_netsessionleave"] = createExportWrapper("morobox8_netsessionleave");
 
 /** @type {function(...*):?} */
-var _moronet8_js_api_init = Module["_moronet8_js_api_init"] = createExportWrapper("moronet8_js_api_init");
+var _morobox8_js_api_init = Module["_morobox8_js_api_init"] = createExportWrapper("morobox8_js_api_init");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_reader_create = Module["_moronet8_packet_reader_create"] = createExportWrapper("moronet8_packet_reader_create");
+var _morobox8_packet_reader_create = Module["_morobox8_packet_reader_create"] = createExportWrapper("morobox8_packet_reader_create");
 
 /** @type {function(...*):?} */
 var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_reader_init = Module["_moronet8_packet_reader_init"] = createExportWrapper("moronet8_packet_reader_init");
+var _morobox8_packet_reader_init = Module["_morobox8_packet_reader_init"] = createExportWrapper("morobox8_packet_reader_init");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_writer_create = Module["_moronet8_packet_writer_create"] = createExportWrapper("moronet8_packet_writer_create");
+var _morobox8_packet_writer_create = Module["_morobox8_packet_writer_create"] = createExportWrapper("morobox8_packet_writer_create");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_writer_init = Module["_moronet8_packet_writer_init"] = createExportWrapper("moronet8_packet_writer_init");
+var _morobox8_packet_writer_init = Module["_morobox8_packet_writer_init"] = createExportWrapper("morobox8_packet_writer_init");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_u8 = Module["_moronet8_packet_read_u8"] = createExportWrapper("moronet8_packet_read_u8");
+var _morobox8_packet_read_u8 = Module["_morobox8_packet_read_u8"] = createExportWrapper("morobox8_packet_read_u8");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_u8 = Module["_moronet8_packet_write_u8"] = createExportWrapper("moronet8_packet_write_u8");
+var _morobox8_packet_write_u8 = Module["_morobox8_packet_write_u8"] = createExportWrapper("morobox8_packet_write_u8");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_u16 = Module["_moronet8_packet_read_u16"] = createExportWrapper("moronet8_packet_read_u16");
+var _morobox8_packet_read_u16 = Module["_morobox8_packet_read_u16"] = createExportWrapper("morobox8_packet_read_u16");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_u16 = Module["_moronet8_packet_write_u16"] = createExportWrapper("moronet8_packet_write_u16");
+var _morobox8_packet_write_u16 = Module["_morobox8_packet_write_u16"] = createExportWrapper("morobox8_packet_write_u16");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_u32 = Module["_moronet8_packet_read_u32"] = createExportWrapper("moronet8_packet_read_u32");
+var _morobox8_packet_read_u32 = Module["_morobox8_packet_read_u32"] = createExportWrapper("morobox8_packet_read_u32");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_u32 = Module["_moronet8_packet_write_u32"] = createExportWrapper("moronet8_packet_write_u32");
+var _morobox8_packet_write_u32 = Module["_morobox8_packet_write_u32"] = createExportWrapper("morobox8_packet_write_u32");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_s8 = Module["_moronet8_packet_read_s8"] = createExportWrapper("moronet8_packet_read_s8");
+var _morobox8_packet_read_s8 = Module["_morobox8_packet_read_s8"] = createExportWrapper("morobox8_packet_read_s8");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_s8 = Module["_moronet8_packet_write_s8"] = createExportWrapper("moronet8_packet_write_s8");
+var _morobox8_packet_write_s8 = Module["_morobox8_packet_write_s8"] = createExportWrapper("morobox8_packet_write_s8");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_s16 = Module["_moronet8_packet_read_s16"] = createExportWrapper("moronet8_packet_read_s16");
+var _morobox8_packet_read_s16 = Module["_morobox8_packet_read_s16"] = createExportWrapper("morobox8_packet_read_s16");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_s16 = Module["_moronet8_packet_write_s16"] = createExportWrapper("moronet8_packet_write_s16");
+var _morobox8_packet_write_s16 = Module["_morobox8_packet_write_s16"] = createExportWrapper("morobox8_packet_write_s16");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_s32 = Module["_moronet8_packet_read_s32"] = createExportWrapper("moronet8_packet_read_s32");
+var _morobox8_packet_read_s32 = Module["_morobox8_packet_read_s32"] = createExportWrapper("morobox8_packet_read_s32");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_s32 = Module["_moronet8_packet_write_s32"] = createExportWrapper("moronet8_packet_write_s32");
+var _morobox8_packet_write_s32 = Module["_morobox8_packet_write_s32"] = createExportWrapper("morobox8_packet_write_s32");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_read_string = Module["_moronet8_packet_read_string"] = createExportWrapper("moronet8_packet_read_string");
+var _morobox8_packet_read_string = Module["_morobox8_packet_read_string"] = createExportWrapper("morobox8_packet_read_string");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_write_string = Module["_moronet8_packet_write_string"] = createExportWrapper("moronet8_packet_write_string");
+var _morobox8_packet_write_string = Module["_morobox8_packet_write_string"] = createExportWrapper("morobox8_packet_write_string");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_reader_size = Module["_moronet8_packet_reader_size"] = createExportWrapper("moronet8_packet_reader_size");
+var _morobox8_packet_reader_size = Module["_morobox8_packet_reader_size"] = createExportWrapper("morobox8_packet_reader_size");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_writer_size = Module["_moronet8_packet_writer_size"] = createExportWrapper("moronet8_packet_writer_size");
+var _morobox8_packet_writer_size = Module["_morobox8_packet_writer_size"] = createExportWrapper("morobox8_packet_writer_size");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_reader_seek = Module["_moronet8_packet_reader_seek"] = createExportWrapper("moronet8_packet_reader_seek");
+var _morobox8_packet_reader_seek = Module["_morobox8_packet_reader_seek"] = createExportWrapper("morobox8_packet_reader_seek");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_writer_seek = Module["_moronet8_packet_writer_seek"] = createExportWrapper("moronet8_packet_writer_seek");
+var _morobox8_packet_writer_seek = Module["_morobox8_packet_writer_seek"] = createExportWrapper("morobox8_packet_writer_seek");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_reader_buffer = Module["_moronet8_packet_reader_buffer"] = createExportWrapper("moronet8_packet_reader_buffer");
+var _morobox8_packet_reader_buffer = Module["_morobox8_packet_reader_buffer"] = createExportWrapper("morobox8_packet_reader_buffer");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_writer_buffer = Module["_moronet8_packet_writer_buffer"] = createExportWrapper("moronet8_packet_writer_buffer");
+var _morobox8_packet_writer_buffer = Module["_morobox8_packet_writer_buffer"] = createExportWrapper("morobox8_packet_writer_buffer");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_reader_delete = Module["_moronet8_packet_reader_delete"] = createExportWrapper("moronet8_packet_reader_delete");
+var _morobox8_packet_reader_delete = Module["_morobox8_packet_reader_delete"] = createExportWrapper("morobox8_packet_reader_delete");
 
 /** @type {function(...*):?} */
 var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
-var _moronet8_packet_writer_delete = Module["_moronet8_packet_writer_delete"] = createExportWrapper("moronet8_packet_writer_delete");
+var _morobox8_packet_writer_delete = Module["_morobox8_packet_writer_delete"] = createExportWrapper("morobox8_packet_writer_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_code_chunk_create = Module["_moronet8_cart_code_chunk_create"] = createExportWrapper("moronet8_cart_code_chunk_create");
+var _morobox8_cart_code_chunk_create = Module["_morobox8_cart_code_chunk_create"] = createExportWrapper("morobox8_cart_code_chunk_create");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_code_chunk_init = Module["_moronet8_cart_code_chunk_init"] = createExportWrapper("moronet8_cart_code_chunk_init");
+var _morobox8_cart_code_chunk_init = Module["_morobox8_cart_code_chunk_init"] = createExportWrapper("morobox8_cart_code_chunk_init");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_code_chunk_delete = Module["_moronet8_cart_code_chunk_delete"] = createExportWrapper("moronet8_cart_code_chunk_delete");
+var _morobox8_cart_code_chunk_delete = Module["_morobox8_cart_code_chunk_delete"] = createExportWrapper("morobox8_cart_code_chunk_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_tileset_chunk_create = Module["_moronet8_cart_tileset_chunk_create"] = createExportWrapper("moronet8_cart_tileset_chunk_create");
+var _morobox8_cart_tileset_chunk_create = Module["_morobox8_cart_tileset_chunk_create"] = createExportWrapper("morobox8_cart_tileset_chunk_create");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_tileset_chunk_init = Module["_moronet8_cart_tileset_chunk_init"] = createExportWrapper("moronet8_cart_tileset_chunk_init");
+var _morobox8_cart_tileset_chunk_init = Module["_morobox8_cart_tileset_chunk_init"] = createExportWrapper("morobox8_cart_tileset_chunk_init");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_tileset_chunk_delete = Module["_moronet8_cart_tileset_chunk_delete"] = createExportWrapper("moronet8_cart_tileset_chunk_delete");
+var _morobox8_cart_tileset_chunk_delete = Module["_morobox8_cart_tileset_chunk_delete"] = createExportWrapper("morobox8_cart_tileset_chunk_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_header_create = Module["_moronet8_cart_header_create"] = createExportWrapper("moronet8_cart_header_create");
+var _morobox8_cart_header_create = Module["_morobox8_cart_header_create"] = createExportWrapper("morobox8_cart_header_create");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_header_init = Module["_moronet8_cart_header_init"] = createExportWrapper("moronet8_cart_header_init");
+var _morobox8_cart_header_init = Module["_morobox8_cart_header_init"] = createExportWrapper("morobox8_cart_header_init");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_header_delete = Module["_moronet8_cart_header_delete"] = createExportWrapper("moronet8_cart_header_delete");
+var _morobox8_cart_header_delete = Module["_morobox8_cart_header_delete"] = createExportWrapper("morobox8_cart_header_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_data_create = Module["_moronet8_cart_data_create"] = createExportWrapper("moronet8_cart_data_create");
+var _morobox8_cart_data_create = Module["_morobox8_cart_data_create"] = createExportWrapper("morobox8_cart_data_create");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_data_init = Module["_moronet8_cart_data_init"] = createExportWrapper("moronet8_cart_data_init");
+var _morobox8_cart_data_init = Module["_morobox8_cart_data_init"] = createExportWrapper("morobox8_cart_data_init");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_data_delete = Module["_moronet8_cart_data_delete"] = createExportWrapper("moronet8_cart_data_delete");
+var _morobox8_cart_data_delete = Module["_morobox8_cart_data_delete"] = createExportWrapper("morobox8_cart_data_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_create = Module["_moronet8_cart_create"] = createExportWrapper("moronet8_cart_create");
+var _morobox8_cart_create = Module["_morobox8_cart_create"] = createExportWrapper("morobox8_cart_create");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_init = Module["_moronet8_cart_init"] = createExportWrapper("moronet8_cart_init");
+var _morobox8_cart_init = Module["_morobox8_cart_init"] = createExportWrapper("morobox8_cart_init");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_delete = Module["_moronet8_cart_delete"] = createExportWrapper("moronet8_cart_delete");
+var _morobox8_cart_delete = Module["_morobox8_cart_delete"] = createExportWrapper("morobox8_cart_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_sizeof = Module["_moronet8_cart_sizeof"] = createExportWrapper("moronet8_cart_sizeof");
+var _morobox8_cart_sizeof = Module["_morobox8_cart_sizeof"] = createExportWrapper("morobox8_cart_sizeof");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_data_as_buffer = Module["_moronet8_cart_data_as_buffer"] = createExportWrapper("moronet8_cart_data_as_buffer");
+var _morobox8_cart_data_as_buffer = Module["_morobox8_cart_data_as_buffer"] = createExportWrapper("morobox8_cart_data_as_buffer");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_data_from_buffer = Module["_moronet8_cart_data_from_buffer"] = createExportWrapper("moronet8_cart_data_from_buffer");
+var _morobox8_cart_data_from_buffer = Module["_morobox8_cart_data_from_buffer"] = createExportWrapper("morobox8_cart_data_from_buffer");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_get_header = Module["_moronet8_cart_get_header"] = createExportWrapper("moronet8_cart_get_header");
+var _morobox8_cart_get_header = Module["_morobox8_cart_get_header"] = createExportWrapper("morobox8_cart_get_header");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_set_header = Module["_moronet8_cart_set_header"] = createExportWrapper("moronet8_cart_set_header");
+var _morobox8_cart_set_header = Module["_morobox8_cart_set_header"] = createExportWrapper("morobox8_cart_set_header");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_get_data = Module["_moronet8_cart_get_data"] = createExportWrapper("moronet8_cart_get_data");
+var _morobox8_cart_get_data = Module["_morobox8_cart_get_data"] = createExportWrapper("morobox8_cart_get_data");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_set_data = Module["_moronet8_cart_set_data"] = createExportWrapper("moronet8_cart_set_data");
+var _morobox8_cart_set_data = Module["_morobox8_cart_set_data"] = createExportWrapper("morobox8_cart_set_data");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_as_buffer = Module["_moronet8_cart_as_buffer"] = createExportWrapper("moronet8_cart_as_buffer");
+var _morobox8_cart_as_buffer = Module["_morobox8_cart_as_buffer"] = createExportWrapper("morobox8_cart_as_buffer");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_from_buffer = Module["_moronet8_cart_from_buffer"] = createExportWrapper("moronet8_cart_from_buffer");
+var _morobox8_cart_from_buffer = Module["_morobox8_cart_from_buffer"] = createExportWrapper("morobox8_cart_from_buffer");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_get_lang = Module["_moronet8_cart_get_lang"] = createExportWrapper("moronet8_cart_get_lang");
+var _morobox8_cart_get_lang = Module["_morobox8_cart_get_lang"] = createExportWrapper("morobox8_cart_get_lang");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_set_lang = Module["_moronet8_cart_set_lang"] = createExportWrapper("moronet8_cart_set_lang");
+var _morobox8_cart_set_lang = Module["_morobox8_cart_set_lang"] = createExportWrapper("morobox8_cart_set_lang");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_select_font = Module["_moronet8_cart_select_font"] = createExportWrapper("moronet8_cart_select_font");
+var _morobox8_cart_select_font = Module["_morobox8_cart_select_font"] = createExportWrapper("morobox8_cart_select_font");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_select_tileset = Module["_moronet8_cart_select_tileset"] = createExportWrapper("moronet8_cart_select_tileset");
+var _morobox8_cart_select_tileset = Module["_morobox8_cart_select_tileset"] = createExportWrapper("morobox8_cart_select_tileset");
 
 /** @type {function(...*):?} */
-var _moronet8_cart_select_code = Module["_moronet8_cart_select_code"] = createExportWrapper("moronet8_cart_select_code");
+var _morobox8_cart_select_code = Module["_morobox8_cart_select_code"] = createExportWrapper("morobox8_cart_select_code");
 
 /** @type {function(...*):?} */
-var _moronet8_init_hooks = Module["_moronet8_init_hooks"] = createExportWrapper("moronet8_init_hooks");
+var _morobox8_init_hooks = Module["_morobox8_init_hooks"] = createExportWrapper("morobox8_init_hooks");
 
 /** @type {function(...*):?} */
-var _moronet8_reset_hooks = Module["_moronet8_reset_hooks"] = createExportWrapper("moronet8_reset_hooks");
+var _morobox8_reset_hooks = Module["_morobox8_reset_hooks"] = createExportWrapper("morobox8_reset_hooks");
 
 /** @type {function(...*):?} */
-var _moronet8_get_hooks = Module["_moronet8_get_hooks"] = createExportWrapper("moronet8_get_hooks");
+var _morobox8_get_hooks = Module["_morobox8_get_hooks"] = createExportWrapper("morobox8_get_hooks");
 
 /** @type {function(...*):?} */
-var _moronet8_malloc = Module["_moronet8_malloc"] = createExportWrapper("moronet8_malloc");
+var _morobox8_malloc = Module["_morobox8_malloc"] = createExportWrapper("morobox8_malloc");
 
 /** @type {function(...*):?} */
-var _moronet8_free = Module["_moronet8_free"] = createExportWrapper("moronet8_free");
+var _morobox8_free = Module["_morobox8_free"] = createExportWrapper("morobox8_free");
 
 /** @type {function(...*):?} */
-var _moronet8_session_host = Module["_moronet8_session_host"] = createExportWrapper("moronet8_session_host");
+var _morobox8_session_host = Module["_morobox8_session_host"] = createExportWrapper("morobox8_session_host");
 
 /** @type {function(...*):?} */
-var _moronet8_session_join = Module["_moronet8_session_join"] = createExportWrapper("moronet8_session_join");
+var _morobox8_session_join = Module["_morobox8_session_join"] = createExportWrapper("morobox8_session_join");
 
 /** @type {function(...*):?} */
-var _moronet8_session_delete = Module["_moronet8_session_delete"] = createExportWrapper("moronet8_session_delete");
+var _morobox8_session_delete = Module["_morobox8_session_delete"] = createExportWrapper("morobox8_session_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_session_broadcast = Module["_moronet8_session_broadcast"] = createExportWrapper("moronet8_session_broadcast");
+var _morobox8_session_broadcast = Module["_morobox8_session_broadcast"] = createExportWrapper("morobox8_session_broadcast");
 
 /** @type {function(...*):?} */
-var _moronet8_session_receive = Module["_moronet8_session_receive"] = createExportWrapper("moronet8_session_receive");
+var _morobox8_session_receive = Module["_morobox8_session_receive"] = createExportWrapper("morobox8_session_receive");
 
 /** @type {function(...*):?} */
-var _moronet8_session_state_get = Module["_moronet8_session_state_get"] = createExportWrapper("moronet8_session_state_get");
+var _morobox8_session_state_get = Module["_morobox8_session_state_get"] = createExportWrapper("morobox8_session_state_get");
 
 /** @type {function(...*):?} */
-var _moronet8_session_poll = Module["_moronet8_session_poll"] = createExportWrapper("moronet8_session_poll");
+var _morobox8_session_poll = Module["_morobox8_session_poll"] = createExportWrapper("morobox8_session_poll");
 
 /** @type {function(...*):?} */
-var _moronet8_api_init = Module["_moronet8_api_init"] = createExportWrapper("moronet8_api_init");
+var _morobox8_api_init = Module["_morobox8_api_init"] = createExportWrapper("morobox8_api_init");
 
 /** @type {function(...*):?} */
-var _moronet8_api_delete = Module["_moronet8_api_delete"] = createExportWrapper("moronet8_api_delete");
+var _morobox8_api_delete = Module["_morobox8_api_delete"] = createExportWrapper("morobox8_api_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_api_load_string = Module["_moronet8_api_load_string"] = createExportWrapper("moronet8_api_load_string");
+var _morobox8_api_load_string = Module["_morobox8_api_load_string"] = createExportWrapper("morobox8_api_load_string");
 
 /** @type {function(...*):?} */
-var _moronet8_api_tick = Module["_moronet8_api_tick"] = createExportWrapper("moronet8_api_tick");
+var _morobox8_api_tick = Module["_morobox8_api_tick"] = createExportWrapper("morobox8_api_tick");
 
 /** @type {function(...*):?} */
-var _moronet8_create = Module["_moronet8_create"] = createExportWrapper("moronet8_create");
+var _morobox8_create = Module["_morobox8_create"] = createExportWrapper("morobox8_create");
 
 /** @type {function(...*):?} */
-var _moronet8_init = Module["_moronet8_init"] = createExportWrapper("moronet8_init");
+var _morobox8_init = Module["_morobox8_init"] = createExportWrapper("morobox8_init");
 
 /** @type {function(...*):?} */
-var _moronet8_delete = Module["_moronet8_delete"] = createExportWrapper("moronet8_delete");
+var _morobox8_delete = Module["_morobox8_delete"] = createExportWrapper("morobox8_delete");
 
 /** @type {function(...*):?} */
-var _moronet8_color_format = Module["_moronet8_color_format"] = createExportWrapper("moronet8_color_format");
+var _morobox8_color_format = Module["_morobox8_color_format"] = createExportWrapper("morobox8_color_format");
 
 /** @type {function(...*):?} */
-var _moronet8_sizeof = Module["_moronet8_sizeof"] = createExportWrapper("moronet8_sizeof");
+var _morobox8_sizeof = Module["_morobox8_sizeof"] = createExportWrapper("morobox8_sizeof");
 
 /** @type {function(...*):?} */
-var _moronet8_get_vram = Module["_moronet8_get_vram"] = createExportWrapper("moronet8_get_vram");
+var _morobox8_get_vram = Module["_morobox8_get_vram"] = createExportWrapper("morobox8_get_vram");
 
 /** @type {function(...*):?} */
-var _moronet8_set_vram = Module["_moronet8_set_vram"] = createExportWrapper("moronet8_set_vram");
+var _morobox8_set_vram = Module["_morobox8_set_vram"] = createExportWrapper("morobox8_set_vram");
 
 /** @type {function(...*):?} */
-var _moronet8_load_bios = Module["_moronet8_load_bios"] = createExportWrapper("moronet8_load_bios");
+var _morobox8_load_bios = Module["_morobox8_load_bios"] = createExportWrapper("morobox8_load_bios");
 
 /** @type {function(...*):?} */
-var _moronet8_load_cart = Module["_moronet8_load_cart"] = createExportWrapper("moronet8_load_cart");
+var _morobox8_load_cart = Module["_morobox8_load_cart"] = createExportWrapper("morobox8_load_cart");
 
 /** @type {function(...*):?} */
-var _moronet8_unload_bios = Module["_moronet8_unload_bios"] = createExportWrapper("moronet8_unload_bios");
+var _morobox8_unload_bios = Module["_morobox8_unload_bios"] = createExportWrapper("morobox8_unload_bios");
 
 /** @type {function(...*):?} */
-var _moronet8_unload_cart = Module["_moronet8_unload_cart"] = createExportWrapper("moronet8_unload_cart");
+var _morobox8_unload_cart = Module["_morobox8_unload_cart"] = createExportWrapper("morobox8_unload_cart");
 
 /** @type {function(...*):?} */
-var _moronet8_tick = Module["_moronet8_tick"] = createExportWrapper("moronet8_tick");
+var _morobox8_tick = Module["_morobox8_tick"] = createExportWrapper("morobox8_tick");
 
 /** @type {function(...*):?} */
-var _moronet8_printc = Module["_moronet8_printc"] = createExportWrapper("moronet8_printc");
+var _morobox8_printc = Module["_morobox8_printc"] = createExportWrapper("morobox8_printc");
 
 /** @type {function(...*):?} */
-var _moronet8_netsessionpoll = Module["_moronet8_netsessionpoll"] = createExportWrapper("moronet8_netsessionpoll");
+var _morobox8_netsessionpoll = Module["_morobox8_netsessionpoll"] = createExportWrapper("morobox8_netsessionpoll");
 
 /** @type {function(...*):?} */
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
@@ -2932,23 +2932,23 @@ class CartData {
             this._ptr = ptr;
         }
         else {
-            this._ptr = morobox8.ccall("moronet8_cart_data_create", "number", null, null);
+            this._ptr = morobox8.ccall("morobox8_cart_data_create", "number", null, null);
         }
     }
     init() {
-        morobox8.ccall("moronet8_cart_data_init", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_data_init", null, "number", [this.ptr]);
     }
     delete() {
-        morobox8.ccall("moronet8_cart_data_delete", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_data_delete", null, "number", [this.ptr]);
         this._ptr = undefined;
     }
     asBuffer(buffer) {
         const ptr = push_array(buffer, buffer.length);
-        return morobox8.ccall("moronet8_cart_data_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        return morobox8.ccall("morobox8_cart_data_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
     fromBuffer(buffer) {
         const ptr = push_array(buffer, buffer.length);
-        morobox8.ccall("moronet8_cart_data_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        morobox8.ccall("morobox8_cart_data_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
 }
 class Cart {
@@ -2956,39 +2956,39 @@ class Cart {
         return this._ptr;
     }
     get data() {
-        return new CartData(morobox8.ccall("moronet8_cart_get_data", "number", "number", [this.ptr]));
+        return new CartData(morobox8.ccall("morobox8_cart_get_data", "number", "number", [this.ptr]));
     }
     set data(value) {
-        morobox8.ccall("moronet8_cart_set_data", null, ["number", "number"], [this.ptr, value.ptr]);
+        morobox8.ccall("morobox8_cart_set_data", null, ["number", "number"], [this.ptr, value.ptr]);
     }
     get lang() {
-        return morobox8.ccall("moronet8_cart_get_lang", "number", "number", [this.ptr]);
+        return morobox8.ccall("morobox8_cart_get_lang", "number", "number", [this.ptr]);
     }
     set lang(value) {
-        morobox8.ccall("moronet8_cart_set_lang", null, ["number", "number"], [this.ptr, value]);
+        morobox8.ccall("morobox8_cart_set_lang", null, ["number", "number"], [this.ptr, value]);
     }
     constructor(ptr) {
         if (ptr !== undefined) {
             this._ptr = ptr;
         }
         else {
-            this._ptr = morobox8.ccall("moronet8_cart_create", "number", null, null);
+            this._ptr = morobox8.ccall("morobox8_cart_create", "number", null, null);
         }
     }
     init() {
-        morobox8.ccall("moronet8_cart_init", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_init", null, "number", [this.ptr]);
     }
     delete() {
-        morobox8.ccall("moronet8_cart_delete", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_cart_delete", null, "number", [this.ptr]);
         this._ptr = undefined;
     }
     asBuffer(buffer) {
         const ptr = push_array(buffer, buffer.length);
-        return morobox8.ccall("moronet8_cart_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        return morobox8.ccall("morobox8_cart_as_buffer", "number", ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
     fromBuffer(buffer) {
         const ptr = push_array(buffer, buffer.length);
-        morobox8.ccall("moronet8_cart_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
+        morobox8.ccall("morobox8_cart_from_buffer", null, ["number", "number", "number"], [this.ptr, ptr, buffer.length]);
     }
 }
 class VM {
@@ -2996,44 +2996,44 @@ class VM {
         return this._ptr;
     }
     get colorFormat() {
-        return morobox8.ccall("moronet8_color_format", "number", null, null);
+        return morobox8.ccall("morobox8_color_format", "number", null, null);
     }
     get state() {
-        return morobox8.ccall("moronet8_state_get", "number", "number", [this.ptr]);
+        return morobox8.ccall("morobox8_state_get", "number", "number", [this.ptr]);
     }
     set state(value) {
-        morobox8.ccall("moronet8_state_set", null, ["number", "number"], [this.ptr, value]);
+        morobox8.ccall("morobox8_state_set", null, ["number", "number"], [this.ptr, value]);
     }
     get vram() {
-        return morobox8.ccall("moronet8_get_vram", "number", "number", [this.ptr]);
+        return morobox8.ccall("morobox8_get_vram", "number", "number", [this.ptr]);
     }
     set vram(value) {
         //const ptr = push_array(value, value.length);
-        morobox8.ccall("moronet8_set_vram", null, ["number", "number", "number"], [this.ptr, value.ptr, value.length]);
+        morobox8.ccall("morobox8_set_vram", null, ["number", "number", "number"], [this.ptr, value.ptr, value.length]);
     }
     constructor(ptr) {
         if (ptr !== undefined) {
             this._ptr = ptr;
         }
         else {
-            this._ptr = morobox8.ccall("moronet8_create", "number", null, null);
+            this._ptr = morobox8.ccall("morobox8_create", "number", null, null);
         }
     }
     init() {
-        morobox8.ccall("moronet8_init", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_init", null, "number", [this.ptr]);
     }
     delete() {
-        morobox8.ccall("moronet8_delete", null, "number", [this.ptr]);
+        morobox8.ccall("morobox8_delete", null, "number", [this.ptr]);
         this._ptr = undefined;
     }
     loadBios(cart) {
-        return morobox8.ccall("moronet8_load_bios", "number", ["number", "number"], [this.ptr, cart.ptr]);
+        return morobox8.ccall("morobox8_load_bios", "number", ["number", "number"], [this.ptr, cart.ptr]);
     }
     loadCart(cart) {
-        return morobox8.ccall("moronet8_load_cart", "number", ["number", "number"], [this.ptr, cart.ptr]);
+        return morobox8.ccall("morobox8_load_cart", "number", ["number", "number"], [this.ptr, cart.ptr]);
     }
     tick(deltaTime) {
-        morobox8.ccall("moronet8_tick", null, ["number", "number"], [this.ptr, deltaTime]);
+        morobox8.ccall("morobox8_tick", null, ["number", "number"], [this.ptr, deltaTime]);
     }
 }
 morobox8.ColorFormat = ColorFormat;
