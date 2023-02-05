@@ -1,4 +1,7 @@
 #include "morobox8.h"
+#include "filesystem/filesystem_hooks.h"
+#include "filesystem/filesystem.h"
+#include "network/session_hooks.h"
 #include "pack.h"
 
 #ifdef HAVE_STDIO_H
@@ -33,7 +36,6 @@
 
 #include <stdarg.h>
 
-typedef struct morobox8_packer morobox8_packer;
 typedef struct morobox8_hooks morobox8_hooks;
 typedef struct morobox8_socket morobox8_socket;
 typedef enum morobox8_session_state morobox8_session_state;
@@ -45,6 +47,7 @@ typedef struct morobox8_session morobox8_session;
 typedef struct morobox8_api morobox8_api;
 typedef struct morobox8_cart morobox8_cart;
 typedef struct morobox8_cart_tileset morobox8_cart_tileset;
+typedef struct morobox8_cart_code morobox8_cart_code;
 typedef struct morobox8_cart_sprite morobox8_cart_sprite;
 typedef struct morobox8_cart_header morobox8_cart_header;
 typedef struct morobox8_cart_data morobox8_cart_data;
@@ -88,14 +91,7 @@ static void MOROBOX8_CDECL internal_printf(const char *fmt, ...)
 static morobox8_hooks morobox8_global_hooks = {
     internal_malloc,
     internal_free,
-    internal_printf,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL};
+    internal_printf};
 
 MOROBOX8_PUBLIC(void)
 morobox8_init_hooks(morobox8_hooks *hooks)
@@ -106,20 +102,6 @@ morobox8_init_hooks(morobox8_hooks *hooks)
         morobox8_global_hooks.free_fn = hooks->free_fn;
     if (hooks->printf_fn)
         morobox8_global_hooks.printf_fn = hooks->printf_fn;
-    if (hooks->host_session_fn)
-        morobox8_global_hooks.host_session_fn = hooks->host_session_fn;
-    if (hooks->join_session_fn)
-        morobox8_global_hooks.join_session_fn = hooks->join_session_fn;
-    if (hooks->delete_session_fn)
-        morobox8_global_hooks.delete_session_fn = hooks->delete_session_fn;
-    if (hooks->broadcast_session_fn)
-        morobox8_global_hooks.broadcast_session_fn = hooks->broadcast_session_fn;
-    if (hooks->receive_session_fn)
-        morobox8_global_hooks.receive_session_fn = hooks->receive_session_fn;
-    if (hooks->session_state_get_fn)
-        morobox8_global_hooks.session_state_get_fn = hooks->session_state_get_fn;
-    if (hooks->poll_session_fn)
-        morobox8_global_hooks.poll_session_fn = hooks->poll_session_fn;
 }
 
 MOROBOX8_PUBLIC(void)
@@ -128,13 +110,6 @@ morobox8_reset_hooks(void)
     morobox8_global_hooks.malloc_fn = NULL;
     morobox8_global_hooks.free_fn = NULL;
     morobox8_global_hooks.printf_fn = NULL;
-    morobox8_global_hooks.host_session_fn = NULL;
-    morobox8_global_hooks.join_session_fn = NULL;
-    morobox8_global_hooks.delete_session_fn = NULL;
-    morobox8_global_hooks.broadcast_session_fn = NULL;
-    morobox8_global_hooks.receive_session_fn = NULL;
-    morobox8_global_hooks.session_state_get_fn = NULL;
-    morobox8_global_hooks.poll_session_fn = NULL;
 }
 
 MOROBOX8_PUBLIC(morobox8_hooks *)
@@ -173,83 +148,6 @@ morobox8_printf(const char *fmt, ...)
         morobox8_global_hooks.printf_fn(fmt, args);
         va_end(args);
     }
-}
-
-MOROBOX8_PUBLIC(morobox8_session *)
-morobox8_session_host(const char *host)
-{
-    if (!morobox8_global_hooks.host_session_fn)
-    {
-        return NULL;
-    }
-
-    return morobox8_global_hooks.host_session_fn(host);
-}
-
-MOROBOX8_PUBLIC(morobox8_session *)
-morobox8_session_join(const char *host)
-{
-    if (!morobox8_global_hooks.join_session_fn)
-    {
-        return NULL;
-    }
-
-    return morobox8_global_hooks.join_session_fn(host);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_session_delete(morobox8_session *session)
-{
-    if (!morobox8_global_hooks.delete_session_fn)
-    {
-        return;
-    }
-
-    morobox8_global_hooks.delete_session_fn(session);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_session_broadcast(morobox8_session *session, const void *buf, size_t size)
-{
-    if (!morobox8_global_hooks.broadcast_session_fn)
-    {
-        return;
-    }
-
-    morobox8_global_hooks.broadcast_session_fn(session, buf, size);
-}
-
-MOROBOX8_PUBLIC(size_t)
-morobox8_session_receive(morobox8_session *session, void *buf, size_t size)
-{
-    if (!morobox8_global_hooks.receive_session_fn)
-    {
-        return 0;
-    }
-
-    return morobox8_global_hooks.receive_session_fn(session, buf, size);
-}
-
-MOROBOX8_PUBLIC(enum morobox8_session_state)
-morobox8_session_state_get(morobox8_session *session)
-{
-    if (!session || !morobox8_global_hooks.session_state_get_fn)
-    {
-        return MOROBOX8_SESSION_CLOSED;
-    }
-
-    return morobox8_global_hooks.session_state_get_fn(session);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_session_poll(morobox8_session *session)
-{
-    if (!morobox8_global_hooks.poll_session_fn)
-    {
-        return;
-    }
-
-    morobox8_global_hooks.poll_session_fn(session);
 }
 
 #define _MOROBOX8_MALLOC morobox8_global_hooks.malloc_fn
@@ -414,7 +312,7 @@ morobox8_tick(morobox8 *vm, float dt)
 {
     vm->ram.dt = dt;
 
-    morobox8_session_state session_state = morobox8_session_state_get(vm->session);
+    morobox8_session_state session_state = morobox8_session_get_state(vm->session);
     if (session_state == MOROBOX8_SESSION_JOINED)
     {
         vm->ram.netram_sp = morobox8_session_receive(
@@ -431,6 +329,8 @@ morobox8_tick(morobox8 *vm, float dt)
     }
 
     /* Always tick bios */
+    vm->cart_select = &vm->bios;
+    morobox8_api_tick(&vm->bios_api);
 
     if (session_state == MOROBOX8_SESSION_HOSTING)
     {
@@ -453,23 +353,16 @@ static morobox8_cart_tileset *morobox8_selected_tileset(struct morobox8 *vm)
     return &vm->cart_select->tileset;
 }
 
-MOROBOX8_PUBLIC(morobox8_u8)
-morobox8_fontget(morobox8 *vm)
-{
-    return 0;
-}
-
 MOROBOX8_PUBLIC(void)
-morobox8_fontset(morobox8 *vm, morobox8_u8 id)
+morobox8_font(morobox8 *vm, const char *name, size_t size)
 {
     assert(vm->cart_select);
-    // morobox8_cart_select_font(vm->cart_select, id);
+    morobox8_fs_read_cart_chunk(name, size, &vm->cart_select->font, sizeof(morobox8_cart_tileset));
 }
 
 MOROBOX8_PUBLIC(void)
 morobox8_print(morobox8 *vm, const char *buf, size_t size, morobox8_s32 x, morobox8_s32 y, morobox8_u8 col)
 {
-    morobox8_printf(buf);
     for (size_t i = 0; i < size; ++i)
     {
         morobox8_printc(vm, buf[i], x + i * MOROBOX8_SPRITE_WIDTH, y, col);
@@ -661,17 +554,11 @@ morobox8_rectfill(morobox8 *vm, morobox8_s32 x0, morobox8_s32 y0, morobox8_s32 x
     }
 }
 
-MOROBOX8_PUBLIC(morobox8_u8)
-morobox8_tilesetget(morobox8 *vm)
-{
-    return 0;
-}
-
 MOROBOX8_PUBLIC(void)
-morobox8_tilesetset(morobox8 *vm, morobox8_u8 id)
+morobox8_tileset(morobox8 *vm, const char *name, size_t size)
 {
     assert(vm->cart_select);
-    // morobox8_cart_select_tileset(vm->cart_select, id);
+    morobox8_fs_read_cart_chunk(name, size, &vm->cart_select->tileset, sizeof(morobox8_cart_tileset));
 }
 
 MOROBOX8_PUBLIC(void)
@@ -694,16 +581,11 @@ morobox8_paltset(morobox8 *vm, morobox8_u8 col, morobox8_s32 t)
     vm->cart_select->palette[col].t = ((morobox8_u8)t != 0);
 }
 
-MOROBOX8_PUBLIC(morobox8_u8)
-morobox8_codeget(morobox8 *vm)
-{
-    return 0;
-}
-
 MOROBOX8_PUBLIC(void)
-morobox8_codeset(morobox8 *vm, morobox8_u8 id)
+morobox8_code(morobox8 *vm, const char *name, size_t size)
 {
     assert(vm->cart_select);
+    morobox8_fs_read_cart_chunk(name, size, &vm->cart_select->code, sizeof(morobox8_cart_code));
 }
 
 MOROBOX8_PUBLIC(morobox8_u8)
@@ -765,13 +647,13 @@ morobox8_netspset(morobox8 *vm, morobox8_netram_sp offset)
 MOROBOX8_PUBLIC(int)
 morobox8_nethost(morobox8 *vm)
 {
-    return morobox8_session_state_get(vm->session) == MOROBOX8_SESSION_HOSTING;
+    return morobox8_session_get_state(vm->session) == MOROBOX8_SESSION_HOSTING;
 }
 
 MOROBOX8_PUBLIC(int)
 morobox8_netclient(morobox8 *vm)
 {
-    return morobox8_session_state_get(vm->session) == MOROBOX8_SESSION_JOINED;
+    return morobox8_session_get_state(vm->session) == MOROBOX8_SESSION_JOINED;
 }
 
 MOROBOX8_PUBLIC(void)
@@ -834,7 +716,7 @@ morobox8_load(morobox8 *vm, const char *cart)
 MOROBOX8_PUBLIC(morobox8_session_state)
 morobox8_netsessionstate(morobox8 *vm)
 {
-    return vm->session ? morobox8_session_state_get(vm->session) : MOROBOX8_SESSION_CLOSED;
+    return vm->session ? morobox8_session_get_state(vm->session) : MOROBOX8_SESSION_CLOSED;
 }
 
 MOROBOX8_PUBLIC(void)
@@ -864,7 +746,7 @@ morobox8_netsessionleave(morobox8 *vm)
         return;
     }
 
-    morobox8_session_delete(vm->session);
+    morobox8_session_free(vm->session);
     vm->session = NULL;
 }
 

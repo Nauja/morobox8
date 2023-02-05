@@ -36,13 +36,6 @@ extern "C"
         void (*free_fn)(void *ptr);
         /* Custom printf function. */
         void (*printf_fn)(const char *fmt, va_list args);
-        struct morobox8_session *(*host_session_fn)(const char *host);
-        struct morobox8_session *(*join_session_fn)(const char *host);
-        void (*delete_session_fn)(struct morobox8_session *session);
-        void (*broadcast_session_fn)(struct morobox8_session *session, const void *buf, size_t size);
-        size_t (*receive_session_fn)(struct morobox8_session *session, void *buf, size_t size);
-        enum morobox8_session_state (*session_state_get_fn)(struct morobox8_session *session);
-        void (*poll_session_fn)(struct morobox8_session *session);
     };
 
     enum morobox8_button
@@ -138,24 +131,6 @@ extern "C"
     MOROBOX8_PUBLIC(void)
     morobox8_printf(const char *fmt, ...);
 
-    MOROBOX8_PUBLIC(struct morobox8_session *)
-    morobox8_session_host(const char *host);
-
-    MOROBOX8_PUBLIC(struct morobox8_session *)
-    morobox8_session_join(const char *host);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_session_delete(struct morobox8_session *session);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_session_broadcast(struct morobox8_session *session, const void *data, size_t size);
-
-    MOROBOX8_PUBLIC(enum morobox8_session_state)
-    morobox8_session_state_get(struct morobox8_session *session);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_session_poll(struct morobox8_session *session);
-
     /* API */
     MOROBOX8_PUBLIC(struct morobox8_api *)
     morobox8_api_init(struct morobox8_api *api, struct morobox8 *vm, enum morobox8_api_lang lang, enum morobox8_api_type type);
@@ -205,11 +180,8 @@ extern "C"
     MOROBOX8_PUBLIC(void)
     morobox8_tick(struct morobox8 *vm, float dt);
 
-    MOROBOX8_PUBLIC(morobox8_u8)
-    morobox8_fontget(struct morobox8 *vm);
-
     MOROBOX8_PUBLIC(void)
-    morobox8_fontset(struct morobox8 *vm, morobox8_u8 id);
+    morobox8_font(struct morobox8 *vm, const char *name, size_t size);
 
     MOROBOX8_PUBLIC(void)
     morobox8_print(struct morobox8 *vm, const char *buf, size_t size, morobox8_s32 x, morobox8_s32 y, morobox8_u8 col);
@@ -250,11 +222,8 @@ extern "C"
     MOROBOX8_PUBLIC(void)
     morobox8_rectfill(struct morobox8 *vm, morobox8_s32 x0, morobox8_s32 y0, morobox8_s32 x1, morobox8_s32 y1, morobox8_u8 col);
 
-    MOROBOX8_PUBLIC(morobox8_u8)
-    morobox8_tilesetget(struct morobox8 *vm);
-
     MOROBOX8_PUBLIC(void)
-    morobox8_tilesetset(struct morobox8 *vm, morobox8_u8 id);
+    morobox8_tileset(struct morobox8 *vm, const char *name, size_t size);
 
     MOROBOX8_PUBLIC(void)
     morobox8_spr(struct morobox8 *vm, morobox8_u8 id, morobox8_s32 x, morobox8_s32 y, morobox8_u8 w, morobox8_u8 h);
@@ -265,11 +234,8 @@ extern "C"
     MOROBOX8_PUBLIC(void)
     morobox8_paltset(struct morobox8 *vm, morobox8_u8 col, morobox8_s32 t);
 
-    MOROBOX8_PUBLIC(morobox8_u8)
-    morobox8_codeget(struct morobox8 *vm);
-
     MOROBOX8_PUBLIC(void)
-    morobox8_codeset(struct morobox8 *vm, morobox8_u8 id);
+    morobox8_code(struct morobox8 *vm, const char *name, size_t size);
 
     MOROBOX8_PUBLIC(morobox8_u8)
     morobox8_peek(struct morobox8 *vm, morobox8_u16 address);

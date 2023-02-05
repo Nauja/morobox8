@@ -96,21 +96,16 @@ static int morobox8_lua_api_font(lua_State *lua)
     int top = lua_gettop(lua);
     morobox8 *vm = morobox8_lua_get_vm(lua);
 
-    if (top < 2)
+    if (top == 1)
     {
-        if (top == 0)
-        {
-            MOROBOX8_LUA_PUSH_NUMBER(
-                lua,
-                morobox8_fontget(vm));
-            return 1;
-        }
+        size_t size;
+        const char *s = morobox8_lua_get_string(lua, 1, &size);
 
-        morobox8_fontset(vm, MOROBOX8_LUA_GET_U8(lua, 1));
+        morobox8_font(vm, s, size);
         return 0;
     }
     else
-        morobox8_lua_error(lua, "invalid parameters, font([id])\n");
+        morobox8_lua_error(lua, "invalid parameters, font(name)\n");
 
     return 0;
 }
@@ -341,21 +336,16 @@ static int morobox8_lua_api_tileset(lua_State *lua)
     int top = lua_gettop(lua);
     morobox8 *vm = morobox8_lua_get_vm(lua);
 
-    if (top < 2)
+    if (top == 1)
     {
-        if (top == 0)
-        {
-            MOROBOX8_LUA_PUSH_NUMBER(
-                lua,
-                morobox8_tilesetget(vm));
-            return 1;
-        }
+        size_t size;
+        const char *s = morobox8_lua_get_string(lua, 1, &size);
 
-        morobox8_tilesetset(vm, MOROBOX8_LUA_GET_U8(lua, 1));
+        morobox8_tileset(vm, s, size);
         return 0;
     }
     else
-        morobox8_lua_error(lua, "invalid parameters, tileset([id])\n");
+        morobox8_lua_error(lua, "invalid parameters, tileset(name)\n");
 
     return 0;
 }
@@ -416,21 +406,16 @@ static int morobox8_lua_api_code(lua_State *lua)
     int top = lua_gettop(lua);
     morobox8 *vm = morobox8_lua_get_vm(lua);
 
-    if (top < 2)
+    if (top == 1)
     {
-        if (top == 0)
-        {
-            MOROBOX8_LUA_PUSH_NUMBER(
-                lua,
-                morobox8_codeget(vm));
-            return 1;
-        }
+        size_t size;
+        const char *s = morobox8_lua_get_string(lua, 1, &size);
 
-        morobox8_codeset(vm, MOROBOX8_LUA_GET_U8(lua, 1));
+        morobox8_code(vm, s, size);
         return 0;
     }
     else
-        morobox8_lua_error(lua, "invalid parameters, code([id])\n");
+        morobox8_lua_error(lua, "invalid parameters, code(name)\n");
 
     return 0;
 }
@@ -807,7 +792,6 @@ static morobox8_api *morobox8_lua_api_load_string(morobox8_api *api, const char 
 
 static morobox8_api *morobox8_lua_api_tick(morobox8_api *api)
 {
-    morobox8_printf("tick cart");
     lua_State *lua = (lua_State *)api->state;
     if (!lua)
     {
@@ -829,7 +813,6 @@ static morobox8_api *morobox8_lua_api_tick(morobox8_api *api)
         return NULL;
     }
 
-    morobox8_lua_error(lua, "ticked");
     return api;
 }
 
