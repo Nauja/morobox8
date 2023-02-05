@@ -833,7 +833,7 @@ static morobox8_api *morobox8_lua_api_tick(morobox8_api *api)
     return api;
 }
 
-void morobox8_lua_api_on_cart_loading(morobox8_api *api)
+void morobox8_lua_api_on_unload(morobox8_api *api)
 {
     lua_State *lua = (lua_State *)api->state;
     if (!lua)
@@ -841,7 +841,7 @@ void morobox8_lua_api_on_cart_loading(morobox8_api *api)
         return;
     }
 
-    lua_getglobal(lua, "on_cart_loading");
+    lua_getglobal(lua, "on_unload");
     if (!lua_isfunction(lua, -1))
     {
         lua_pop(lua, 1);
@@ -850,11 +850,12 @@ void morobox8_lua_api_on_cart_loading(morobox8_api *api)
 
     if (morobox8_lua_api_do_call(lua, 0, 0) != LUA_OK)
     {
-        morobox8_printf("error in tick: %s", lua_tostring(lua, -1));
+        morobox8_printf("error in on_unload: %s", lua_tostring(lua, -1));
+        return;
     }
 }
 
-void morobox8_lua_api_on_cart_loaded(morobox8_api *api)
+void morobox8_lua_api_on_load(morobox8_api *api)
 {
     lua_State *lua = (lua_State *)api->state;
     if (!lua)
@@ -862,7 +863,7 @@ void morobox8_lua_api_on_cart_loaded(morobox8_api *api)
         return;
     }
 
-    lua_getglobal(lua, "on_cart_loaded");
+    lua_getglobal(lua, "on_load");
     if (!lua_isfunction(lua, -1))
     {
         lua_pop(lua, 1);
@@ -871,8 +872,7 @@ void morobox8_lua_api_on_cart_loaded(morobox8_api *api)
 
     if (morobox8_lua_api_do_call(lua, 0, 0) != LUA_OK)
     {
-        morobox8_printf("error in tick: %s", lua_tostring(lua, -1));
-        return;
+        morobox8_printf("error in on_load: %s", lua_tostring(lua, -1));
     }
 }
 
@@ -900,10 +900,18 @@ morobox8_lua_api_init(morobox8_api *api, morobox8 *vm, morobox8_api_type type)
     api->free = &morobox8_lua_api_free;
     api->load_string = &morobox8_lua_api_load_string;
     api->tick = &morobox8_lua_api_tick;
-    api->on_cart_loading = &morobox8_lua_api_on_cart_loading;
-    api->on_cart_loaded = &morobox8_lua_api_on_cart_loaded;
+    api->on_unload = &morobox8_lua_api_on_unload;
+    api->on_load = &morobox8_lua_api_on_load;
 
     return api;
 }
+
+const struct morobox8_api_config morobox8_lua_api_config =
+    {
+        .lang = MOROBOX8_API_LANG_LUA,
+        .main = "main.lua",
+        .main_size = 8,
+        .ext = ".lua",
+        .ext_size = 4};
 
 #endif

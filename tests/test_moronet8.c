@@ -20,7 +20,7 @@ end\n\n";
     morobox8_cart cart;
 
     morobox8_cart_init(&cart);
-    cart.lang = MOROBOX8_LANG_LUA;
+    cart.lang = MOROBOX8_API_LANG_LUA;
     memcpy((void *)&cart.code, code, strlen(code));
 
     fs_assert_make_dir(MOROBOX8_DATA_DIR);
@@ -36,7 +36,7 @@ static void test_load_bios(void **state)
     morobox8_init(&vm);
 
     morobox8_cart cart;
-    cart.lang = MOROBOX8_LANG_LUA;
+    cart.lang = MOROBOX8_API_LANG_LUA;
     // cart.code = "function tick() print(\"hello\") end";
     morobox8_load_bios(&vm, &cart);
 

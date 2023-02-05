@@ -16,6 +16,8 @@ extern "C"
     MOROBOX8_PUBLIC(struct morobox8_api *)
     morobox8_js_api_init(struct morobox8_api *api, struct morobox8 *vm, enum morobox8_api_type type);
 
+    extern const struct morobox8_api_config morobox8_js_api_config;
+
 #endif
 
 #ifdef __cplusplus

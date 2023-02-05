@@ -10,7 +10,7 @@
 #include "tests/fs_testutils.h"
 #include "morobox8.h"
 
-typedef enum morobox8_lang morobox8_lang;
+typedef enum morobox8_api_lang morobox8_api_lang;
 typedef struct morobox8_api morobox8_api;
 typedef struct morobox8_cart morobox8_cart;
 typedef struct morobox8 morobox8;

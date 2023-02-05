@@ -4,6 +4,9 @@
 #include <string.h>
 #endif
 
+#define MOROBOX8_TRUE 1
+#define MOROBOX8_FALSE 0
+
 #define MOROBOX8_CREATE_H(type)    \
     MOROBOX8_PUBLIC(struct type *) \
     type##_create(void);           \
@@ -16,7 +19,7 @@
     MOROBOX8_PUBLIC(struct type *)                                            \
     type##_create(void)                                                       \
     {                                                                         \
-        struct type *o = (struct type *)MOROBOX8_MALLOC(sizeof(struct type)); \
+        struct type *o = (struct type *)morobox8_malloc(sizeof(struct type)); \
         if (o)                                                                \
         {                                                                     \
             type##_init(o);                                                   \
@@ -37,7 +40,7 @@
     MOROBOX8_PUBLIC(void)         \
     type##_delete(struct type *o) \
     {                             \
-        MOROBOX8_FREE(o);         \
+        morobox8_free(o);         \
     }
 
 #define MOROBOX8_CID_C(type) \

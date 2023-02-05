@@ -3,8 +3,9 @@
 #include "morobox8_config.h"
 #include "morobox8_types.h"
 #include "morobox8_limits.h"
-#include "cart.h"
 #include "api/api_type.h"
+#include "api/api.h"
+#include "cart/cart.h"
 #include "network/session_state.h"
 
 #ifdef HAVE_STDARG_H
@@ -42,24 +43,6 @@ extern "C"
         size_t (*receive_session_fn)(struct morobox8_session *session, void *buf, size_t size);
         enum morobox8_session_state (*session_state_get_fn)(struct morobox8_session *session);
         void (*poll_session_fn)(struct morobox8_session *session);
-    };
-
-    struct morobox8_api
-    {
-        /* Type of API. */
-        enum morobox8_api_type type;
-        /* State of the API. */
-        void *state;
-        /* Delete the API. */
-        void (*free)(struct morobox8_api *api);
-        /* Load code from buffer. */
-        struct morobox8_api *(*load_string)(struct morobox8_api *api, const char *buf, size_t size);
-        /* Tick the code. */
-        struct morobox8_api *(*tick)(struct morobox8_api *api);
-        /* Notify cart is loading. */
-        void (*on_cart_loading)(struct morobox8_api *api);
-        /* Notify cart is loaded. */
-        void (*on_cart_loaded)(struct morobox8_api *api);
     };
 
     enum morobox8_button
@@ -110,6 +93,14 @@ extern "C"
                 int start : 1;
                 int reserved : 2;
             } buttons[2];
+            /* If a code bank must be loaded for bios. */
+            morobox8_u8 bios_load_code;
+            /* Next code bank to load for bios. */
+            morobox8_u8 bios_next_code;
+            /* If a code bank must be loaded for cart. */
+            morobox8_u8 cart_load_code;
+            /* Next code bank to load for cart. */
+            morobox8_u8 cart_next_code;
         } ram;
         /* Console state. */
         enum morobox8_state state;
@@ -167,7 +158,7 @@ extern "C"
 
     /* API */
     MOROBOX8_PUBLIC(struct morobox8_api *)
-    morobox8_api_init(struct morobox8_api *api, struct morobox8 *vm, enum morobox8_lang lang, enum morobox8_api_type type);
+    morobox8_api_init(struct morobox8_api *api, struct morobox8 *vm, enum morobox8_api_lang lang, enum morobox8_api_type type);
 
     MOROBOX8_PUBLIC(void)
     morobox8_api_delete(struct morobox8_api *api);

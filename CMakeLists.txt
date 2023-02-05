@@ -449,8 +449,9 @@ message("MOROBOX8_LIB_HEADERS=${MOROBOX8_LIB_HEADERS}")
 set(MOROBOX8_LIB_SOURCES
     ${MOROBOX8_SOURCE_DIR}/api/lua_api.c
     ${MOROBOX8_SOURCE_DIR}/api/js_api.c
+    ${MOROBOX8_SOURCE_DIR}/cart/cart.c
     ${MOROBOX8_SOURCE_DIR}/network/packet.c
-    ${MOROBOX8_SOURCE_DIR}/cart.c
+    ${MOROBOX8_SOURCE_DIR}/pack.c
     ${MOROBOX8_SOURCE_DIR}/morobox8.c
 )
 

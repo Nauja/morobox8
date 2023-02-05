@@ -1,4 +1,5 @@
 #include "morobox8.h"
+#include "pack.h"
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -32,12 +33,13 @@
 
 #include <stdarg.h>
 
+typedef struct morobox8_packer morobox8_packer;
 typedef struct morobox8_hooks morobox8_hooks;
 typedef struct morobox8_socket morobox8_socket;
 typedef enum morobox8_session_state morobox8_session_state;
 typedef enum morobox8_state morobox8_state;
 typedef enum morobox8_api_type morobox8_api_type;
-typedef enum morobox8_lang morobox8_lang;
+typedef enum morobox8_api_lang morobox8_api_lang;
 typedef enum morobox8_button morobox8_button;
 typedef struct morobox8_session morobox8_session;
 typedef struct morobox8_api morobox8_api;
@@ -258,7 +260,7 @@ morobox8_session_poll(morobox8_session *session)
 #define MOROBOX8_FALSE 0
 
 MOROBOX8_PUBLIC(morobox8_api *)
-morobox8_api_init(morobox8_api *api, morobox8 *vm, morobox8_lang lang, morobox8_api_type type)
+morobox8_api_init(morobox8_api *api, morobox8 *vm, morobox8_api_lang lang, morobox8_api_type type)
 {
     /** Delete old API instance */
     morobox8_api_delete(api);
@@ -269,11 +271,11 @@ morobox8_api_init(morobox8_api *api, morobox8 *vm, morobox8_lang lang, morobox8_
     switch (lang)
     {
 #if MOROBOX8_LUA_API
-    case MOROBOX8_LANG_LUA:
+    case MOROBOX8_API_LANG_LUA:
         return morobox8_lua_api_init(api, vm, type);
 #endif
 #if MOROBOX8_JS_API
-    case MOROBOX8_LANG_JS:
+    case MOROBOX8_API_LANG_JS:
         return morobox8_js_api_init(api, vm, type);
 #endif
     default:
@@ -702,7 +704,6 @@ MOROBOX8_PUBLIC(void)
 morobox8_codeset(morobox8 *vm, morobox8_u8 id)
 {
     assert(vm->cart_select);
-    // morobox8_cart_select_code(vm->cart_select, id);
 }
 
 MOROBOX8_PUBLIC(morobox8_u8)
@@ -821,20 +822,10 @@ MOROBOX8_PUBLIC(void)
 morobox8_load(morobox8 *vm, const char *cart)
 {
 #ifdef MOROBOX8_FILESYSTEM
-    if (vm->bios_api.on_cart_loading)
-    {
-        vm->bios_api.on_cart_loading(&vm->bios_api);
-    }
-
     morobox8_cart c;
-    morobox8_cart_load_dir(&c, cart);
+    morobox8_pack(cart, &c);
 
     morobox8_load_cart(vm, &c.data);
-
-    if (vm->bios_api.on_cart_loaded)
-    {
-        vm->bios_api.on_cart_loaded(&vm->bios_api);
-    }
 #else
     morobox8_printf("load not supported on this platform\n");
 #endif

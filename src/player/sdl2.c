@@ -18,7 +18,7 @@ struct state
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef enum morobox8_lang morobox8_lang;
+typedef enum morobox8_api_lang morobox8_api_lang;
 typedef struct morobox8_cart morobox8_cart;
 typedef struct morobox8 morobox8;
 

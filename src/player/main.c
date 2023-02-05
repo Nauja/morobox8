@@ -1,4 +1,6 @@
 #include "morobox8.h"
+#include "pack.h"
+
 #include "fs.h"
 #include "argparse.h"
 
@@ -25,6 +27,7 @@ static const char *const usage[] = {
 
 // clang-format off
 #define MOROBOX8_PACK_PARAMS_LIST(macro)                                                     \
+    macro(output,       char*,  STRING,     "",         "output file")                        \
     macro(version,      int,    BOOLEAN,    "",         "print program version")
 
 #define MOROBOX8_UNPACK_PARAMS_LIST(macro)                                                     \
@@ -43,7 +46,7 @@ static const char *const usage[] = {
 
 typedef struct
 {
-    char *cart;
+    char *target;
 #define MOROBOX8_CMD_PARAMS_DEF(name, ctype, type, post, help) ctype name;
     MOROBOX8_PACK_PARAMS_LIST(MOROBOX8_CMD_PARAMS_DEF)
 #undef MOROBOX8_CMD_PARAMS_DEF
@@ -65,19 +68,65 @@ typedef struct
 #undef MOROBOX8_CMD_PARAMS_DEF
 } morobox8_run_args;
 
+static int parse_pack(morobox8_pack_args *args, int argc, char *argv[])
+{
+    if (argc == 1)
+    {
+        args->target = argv[0];
+        return 1;
+    }
+
+    return 0;
+}
+
 static int handle_pack(morobox8_pack_args *args)
 {
-    return 0;
+    morobox8_cart cart;
+    if (!morobox8_pack(args->target, &cart))
+    {
+        morobox8_printf("Pack failed\n");
+        return 0;
+    }
+
+    char buf[MOROBOX8_FILENAME_SIZE];
+    if (args->output)
+    {
+        memcpy(&buf[0], args->output, strlen(args->output));
+    }
+    else
+    {
+        strncat(&buf[0], args->target, strlen(args->target));
+        strncat(&buf[0], ".mb8", 4);
+    }
+    printf("Dump cart to %s\n", buf);
+
+    if (!fs_write_file(buf, (void *)&cart, sizeof(morobox8_cart)))
+    {
+        morobox8_printf("Can't write output\n");
+        return 0;
+    }
+
+    return 1;
+}
+
+static int parse_unpack(morobox8_unpack_args *args, int argc, char *argv[])
+{
+    return 1;
 }
 
 static int handle_unpack(morobox8_unpack_args *args)
 {
-    return 0;
+    return 1;
+}
+
+static int parse_run(morobox8_run_args *args, int argc, char *argv[])
+{
+    return 1;
 }
 
 static int handle_run(morobox8_run_args *args)
 {
-    return 0;
+    return 1;
 }
 
 #define MOROBOX8_CMD_PARAMS_DEF(name, ctype, type, post, help) OPT_##type('\0', #name, &args.name, help, 0, 0, 0),
@@ -85,7 +134,7 @@ static int handle_run(morobox8_run_args *args)
     static int parse_command_##name(int argc, char **argv)             \
     {                                                                  \
         morobox8_##name##_args args;                                   \
-        (void)(args);                                                  \
+        memset(&args, 0, sizeof(morobox8_##name##_args));              \
                                                                        \
         struct argparse_option options[] =                             \
             {                                                          \
@@ -103,6 +152,12 @@ static int handle_run(morobox8_run_args *args)
         argparse_init(&argparse, options, usage, 0);                   \
         argc = argparse_parse(&argparse, argc, (const char **)argv);   \
         if (argc < 1)                                                  \
+        {                                                              \
+            argparse_usage(&argparse);                                 \
+            return -1;                                                 \
+        }                                                              \
+                                                                       \
+        if (!parse_##name(&args, argc, argv))                          \
         {                                                              \
             argparse_usage(&argparse);                                 \
             return -1;                                                 \
