@@ -8,10 +8,6 @@
 #include "cart/cart.h"
 #include "network/session_state.h"
 
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -26,17 +22,6 @@ extern "C"
 
     struct morobox8_socket;
     struct morobox8_session;
-
-    /* Struct for custom hooks configuration. */
-    struct morobox8_hooks
-    {
-        /* Custom malloc function. */
-        void *(*malloc_fn)(size_t size);
-        /* Custom free function. */
-        void (*free_fn)(void *ptr);
-        /* Custom printf function. */
-        void (*printf_fn)(const char *fmt, va_list args);
-    };
 
     enum morobox8_button
     {
@@ -97,8 +82,6 @@ extern "C"
         } ram;
         /* Console state. */
         enum morobox8_state state;
-        /* Screen buffer. */
-        morobox8_u32 *screen;
         /* API used for the bios only. */
         struct morobox8_api bios_api;
         /* API used for the cart. */
@@ -111,25 +94,6 @@ extern "C"
         struct morobox8_cart_data *cart_select;
         struct morobox8_session *session;
     };
-
-    /* Helpers for hooks */
-    MOROBOX8_PUBLIC(void)
-    morobox8_init_hooks(struct morobox8_hooks *hooks);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_reset_hooks(void);
-
-    MOROBOX8_PUBLIC(struct morobox8_hooks *)
-    morobox8_get_hooks(void);
-
-    MOROBOX8_PUBLIC(void *)
-    morobox8_malloc(size_t size);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_free(void *p);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_printf(const char *fmt, ...);
 
     /* API */
     MOROBOX8_PUBLIC(struct morobox8_api *)

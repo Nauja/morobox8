@@ -6,6 +6,16 @@
 
 #define MOROBOX8_TRUE 1
 #define MOROBOX8_FALSE 0
+#define MOROBOX8_COMMA ,
+
+#define MOROBOX8_RETFALSE_DEFAULT(val) return MOROBOX8_FALSE;
+#define MOROBOX8_RETZERO_DEFAULT(val) return 0;
+#define MOROBOX8_RETNULL_DEFAULT(val) return NULL;
+#define MOROBOX8_RETVOID_DEFAULT(val) return;
+#define MOROBOX8_RETFALSE_VALUE(val) return val;
+#define MOROBOX8_RETZERO_VALUE(val) return val;
+#define MOROBOX8_RETNULL_VALUE(val) return val;
+#define MOROBOX8_RETVOID_VALUE(val) return;
 
 #define MOROBOX8_CREATE_H(type)    \
     MOROBOX8_PUBLIC(struct type *) \

@@ -2,6 +2,7 @@
 
 #if MOROBOX8_JS_API
 
+#include "morobox8_hooks.h"
 #include "api/js_api.h"
 
 typedef enum morobox8_api_type morobox8_api_type;

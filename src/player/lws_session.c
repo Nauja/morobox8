@@ -1,7 +1,8 @@
+/**
+ * Session implementation using libwebsockets.
+ */
 #include "morobox8.h"
 #include "morobox8_config.h"
-
-#if MOROBOX8_WEBSOCKETS
 
 #include "network/session_state.h"
 #include "network/packet.h"
@@ -320,7 +321,8 @@ static morobox8_session *morobox8_session_create(const char *host)
     return &session;
 }
 
-morobox8_session *morobox8_session_host_impl(const char *host)
+MOROBOX8_PUBLIC(morobox8_session *)
+morobox8_session_host(const char *host)
 {
     if (!morobox8_session_create(host))
     {
@@ -333,7 +335,8 @@ morobox8_session *morobox8_session_host_impl(const char *host)
     return &session;
 }
 
-morobox8_session *morobox8_session_join_impl(const char *host)
+MOROBOX8_PUBLIC(morobox8_session *)
+morobox8_session_join(const char *host)
 {
     if (!morobox8_session_create(host))
     {
@@ -346,7 +349,8 @@ morobox8_session *morobox8_session_join_impl(const char *host)
     return &session;
 }
 
-void morobox8_session_delete_impl(morobox8_session *session)
+MOROBOX8_PUBLIC(void)
+morobox8_session_free(morobox8_session *session)
 {
     session->state = MOROBOX8_SESSION_CLOSED;
     if (session->context)
@@ -359,12 +363,14 @@ void morobox8_session_delete_impl(morobox8_session *session)
     }
 }
 
-morobox8_session_state morobox8_session_state_get_impl(morobox8_session *session)
+MOROBOX8_PUBLIC(morobox8_session_state)
+morobox8_session_get_state(morobox8_session *session)
 {
     return session->state;
 }
 
-void morobox8_session_broadcast_impl(morobox8_session *session, const void *buf, size_t size)
+MOROBOX8_PUBLIC(void)
+morobox8_session_broadcast(morobox8_session *session, const void *buf, size_t size)
 {
     if (!session->player)
     {
@@ -381,7 +387,8 @@ void morobox8_session_broadcast_impl(morobox8_session *session, const void *buf,
     lws_ring_insert(session->player->wait_send_queue, &packet, 1);
 }
 
-size_t morobox8_session_receive_impl(morobox8_session *session, void *buf, size_t size)
+MOROBOX8_PUBLIC(size_t)
+morobox8_session_receive(morobox8_session *session, void *buf, size_t size)
 {
     if (!session->player)
     {
@@ -404,7 +411,8 @@ size_t morobox8_session_receive_impl(morobox8_session *session, void *buf, size_
     return len;
 }
 
-void morobox8_session_poll_impl(morobox8_session *session)
+MOROBOX8_PUBLIC(void)
+morobox8_session_poll(morobox8_session *session)
 {
     pthread_mutex_lock(&session->mut);
     if (session->player)
@@ -414,5 +422,3 @@ void morobox8_session_poll_impl(morobox8_session *session)
     }
     pthread_mutex_unlock(&session->mut);
 }
-
-#endif

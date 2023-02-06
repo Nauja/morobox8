@@ -126,44 +126,9 @@
 #define MOROBOX8_WEBSOCKETS 1
 #endif
 
-#ifndef MOROBOX8_MALLOC
-#ifdef HAVE_MALLOC
-/**
- * Defines the malloc function used by moro8 at compile time.
- *
- * @code
- * void* my_malloc(size_t size)
- * {
- *     // do something
- * }
- *
- * #define MOROBOX8_MALLOC my_malloc
- * @endcode
- */
-#define MOROBOX8_MALLOC malloc
-#else
-#define MOROBOX8_MALLOC(size) NULL
-#endif
-#endif
-
-#ifndef MOROBOX8_FREE
-#ifdef HAVE_FREE
-/**
- * Defines the free function used by moro8 at compile time.
- *
- * @code
- * void my_free(void* ptr)
- * {
- *     // do something
- * }
- *
- * #define MOROBOX8_FREE my_free
- * @endcode
- */
-#define MOROBOX8_FREE free
-#else
-#define MOROBOX8_FREE(ptr)
-#endif
+#ifndef MOROBOX8_HOOK
+/* Builds with hooks. */
+/* #undef MOROBOX8_HOOK */
 #endif
 
 #if !defined(__WINDOWS__) && (defined(WIN32) || defined(WIN64) || defined(_MSC_VER) || defined(_WIN32))

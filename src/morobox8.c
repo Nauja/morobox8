@@ -1,8 +1,10 @@
 #include "morobox8.h"
+#include "morobox8_defines.h"
+#include "morobox8_hooks.h"
 #include "filesystem/filesystem_hooks.h"
 #include "filesystem/filesystem.h"
 #include "network/session_hooks.h"
-#include "pack.h"
+#include "tool/pack.h"
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -36,7 +38,6 @@
 
 #include <stdarg.h>
 
-typedef struct morobox8_hooks morobox8_hooks;
 typedef struct morobox8_socket morobox8_socket;
 typedef enum morobox8_session_state morobox8_session_state;
 typedef enum morobox8_state morobox8_state;
@@ -52,110 +53,6 @@ typedef struct morobox8_cart_sprite morobox8_cart_sprite;
 typedef struct morobox8_cart_header morobox8_cart_header;
 typedef struct morobox8_cart_data morobox8_cart_data;
 typedef struct morobox8 morobox8;
-
-#ifdef HAVE_MALLOC
-#if defined(_MSC_VER)
-/* work around MSVC error C2322: '...' address of dllimport '...' is not static */
-static void *MOROBOX8_CDECL internal_malloc(size_t size)
-{
-    return MOROBOX8_MALLOC(size);
-}
-
-static void MOROBOX8_CDECL internal_free(void *pointer)
-{
-    MOROBOX8_FREE(pointer);
-}
-#else
-#define internal_malloc MOROBOX8_MALLOC
-#define internal_free MOROBOX8_FREE
-#endif
-#else
-#define internal_malloc NULL
-#define internal_free NULL
-#endif
-
-#ifdef HAVE_PRINTF
-#if defined(_MSC_VER)
-/* work around MSVC error C2322: '...' address of dllimport '...' is not static */
-static void MOROBOX8_CDECL internal_printf(const char *fmt, ...)
-{
-    printf(fmt, ...);
-}
-#else
-#define internal_printf MOROBOX8_PRINTF
-#endif
-#else
-#define internal_printf NULL
-#endif
-
-static morobox8_hooks morobox8_global_hooks = {
-    internal_malloc,
-    internal_free,
-    internal_printf};
-
-MOROBOX8_PUBLIC(void)
-morobox8_init_hooks(morobox8_hooks *hooks)
-{
-    if (hooks->malloc_fn)
-        morobox8_global_hooks.malloc_fn = hooks->malloc_fn;
-    if (hooks->free_fn)
-        morobox8_global_hooks.free_fn = hooks->free_fn;
-    if (hooks->printf_fn)
-        morobox8_global_hooks.printf_fn = hooks->printf_fn;
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_reset_hooks(void)
-{
-    morobox8_global_hooks.malloc_fn = NULL;
-    morobox8_global_hooks.free_fn = NULL;
-    morobox8_global_hooks.printf_fn = NULL;
-}
-
-MOROBOX8_PUBLIC(morobox8_hooks *)
-morobox8_get_hooks(void)
-{
-    return &morobox8_global_hooks;
-}
-
-MOROBOX8_PUBLIC(void *)
-morobox8_malloc(size_t size)
-{
-    if (!morobox8_global_hooks.malloc_fn)
-    {
-        return NULL;
-    }
-
-    return morobox8_global_hooks.malloc_fn(size);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_free(void *p)
-{
-    if (morobox8_global_hooks.free_fn)
-    {
-        morobox8_global_hooks.free_fn(p);
-    }
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_printf(const char *fmt, ...)
-{
-    if (morobox8_global_hooks.printf_fn)
-    {
-        va_list args;
-        va_start(args, fmt);
-        morobox8_global_hooks.printf_fn(fmt, args);
-        va_end(args);
-    }
-}
-
-#define _MOROBOX8_MALLOC morobox8_global_hooks.malloc_fn
-#define _MOROBOX8_FREE morobox8_global_hooks.free_fn
-#define _MOROBOX8_PRINTF morobox8_global_hooks.printf_fn
-
-#define MOROBOX8_TRUE 1
-#define MOROBOX8_FALSE 0
 
 MOROBOX8_PUBLIC(morobox8_api *)
 morobox8_api_init(morobox8_api *api, morobox8 *vm, morobox8_api_lang lang, morobox8_api_type type)
@@ -207,7 +104,7 @@ morobox8_api_tick(morobox8_api *api)
 MOROBOX8_PUBLIC(morobox8 *)
 morobox8_create(void)
 {
-    morobox8 *o = (morobox8 *)_MOROBOX8_MALLOC(sizeof(morobox8));
+    morobox8 *o = (morobox8 *)morobox8_malloc(sizeof(morobox8));
     if (o)
     {
         morobox8_init(o);
@@ -228,7 +125,7 @@ morobox8_delete(morobox8 *vm)
 {
     morobox8_api_delete(&vm->cart_api);
     morobox8_api_delete(&vm->bios_api);
-    _MOROBOX8_FREE(vm);
+    morobox8_free(vm);
 }
 
 MOROBOX8_PUBLIC(size_t)

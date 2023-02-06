@@ -1,4 +1,5 @@
 #include "morobox8.h"
+#include "morobox8_hooks.h"
 
 #include <stdio.h>
 #include <SDL.h>
@@ -144,9 +145,6 @@ int morobox8_run_player(morobox8 *vm)
     SDL_DestroyWindow(window);
 
     // SDL_free(cart);
-
-    MOROBOX8_FREE(vm->screen);
-    vm->screen = NULL;
 
     return 0;
 }

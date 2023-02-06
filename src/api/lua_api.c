@@ -2,6 +2,7 @@
 
 #if MOROBOX8_LUA_API
 
+#include "morobox8_hooks.h"
 #include "api/lua_api.h"
 #include "api/api_macro.h"
 #include <lua.h>

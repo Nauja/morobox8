@@ -1,5 +1,6 @@
-#include "pack.h"
+#include "tool/pack.h"
 #include "morobox8.h"
+#include "morobox8_hooks.h"
 #include "api/lua_api.h"
 #include "api/js_api.h"
 #include "cart/cart.h"

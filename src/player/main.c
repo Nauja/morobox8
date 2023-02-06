@@ -1,7 +1,8 @@
 #include "morobox8.h"
+#include "morobox8_hooks.h"
 #include "filesystem/filesystem_hooks.h"
 #include "network/session_hooks.h"
-#include "pack.h"
+#include "tool/pack.h"
 
 #include "fs.h"
 #include "argparse.h"
@@ -265,44 +266,28 @@ static int morobox8_parse_args(int argc, char **argv)
     fclose(f);
 }*/
 
-static void morobox8_printf_impl(const char *fmt, va_list args)
+MOROBOX8_PUBLIC(void *)
+morobox8_malloc(size_t size)
 {
-    vfprintf(stdout, fmt, args);
+    return malloc(size);
 }
 
-static morobox8_hooks morobox8_hooks_impl = {.malloc_fn = NULL,
-                                             .free_fn = NULL,
-                                             .printf_fn = &morobox8_printf_impl};
+MOROBOX8_PUBLIC(void)
+morobox8_free(void *p)
+{
+    free(p);
+}
 
-#define MOROBOX8_FS_HOOKS_DEF(name, rtype, params) \
-    rtype morobox8_fs_##name##_impl(params);
-MOROBOX8_FS_HOOKS_LIST(MOROBOX8_FS_HOOKS_DEF)
-#undef MOROBOX8_FS_HOOKS_DEF
-
-static morobox8_fs_hooks morobox8_fs_hooks_impl = {
-#define MOROBOX8_FS_HOOKS_DEF(name, rtype, params) \
-    .name##_fn = morobox8_fs_##name##_impl,
-    MOROBOX8_FS_HOOKS_LIST(MOROBOX8_FS_HOOKS_DEF)
-#undef MOROBOX8_FS_HOOKS_DEF
-};
-
-#define MOROBOX8_SESSION_HOOKS_DEF(name, rtype, params) \
-    rtype morobox8_session_##name##_impl(params);
-MOROBOX8_SESSION_HOOKS_LIST(MOROBOX8_SESSION_HOOKS_DEF)
-#undef MOROBOX8_SESSION_HOOKS_DEF
-
-static morobox8_session_hooks morobox8_session_hooks_impl = {
-#define MOROBOX8_SESSION_HOOKS_DEF(name, rtype, params) \
-    .name##_fn = morobox8_session_##name##_impl,
-    MOROBOX8_SESSION_HOOKS_LIST(MOROBOX8_SESSION_HOOKS_DEF)
-#undef MOROBOX8_SESSION_HOOKS_DEF
-};
+MOROBOX8_PUBLIC(void)
+morobox8_printf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(stdout, fmt, args);
+    va_end(args);
+}
 
 int main(int argc, char **argv)
 {
-    morobox8_init_hooks(&morobox8_hooks_impl);
-    morobox8_fs_init_hooks(&morobox8_fs_hooks_impl);
-    morobox8_session_init_hooks(&morobox8_session_hooks_impl);
-
     return morobox8_parse_args(argc, argv);
 }
