@@ -22,6 +22,8 @@ extern "C"
 
     struct morobox8_socket;
     struct morobox8_session;
+    struct morobox8_reader;
+    struct morobox8_storage;
 
     enum morobox8_button
     {
@@ -88,11 +90,19 @@ extern "C"
         struct morobox8_api cart_api;
         /* Bios data. */
         struct morobox8_cart_data bios;
+        /* Pointer to bios file. */
+        struct morobox8_file *bios_file;
         /* Cart data. */
         struct morobox8_cart_data cart;
+        /* Pointer to cart file. */
+        struct morobox8_file *cart_file;
         /* Pointer to bios or cart. */
         struct morobox8_cart_data *cart_select;
         struct morobox8_session *session;
+        /* Pointer to the external reader. */
+        struct morobox8_reader *reader;
+        /* Pointer to the internal storage. */
+        struct morobox8_storage *storage;
     };
 
     /* API */
@@ -236,9 +246,6 @@ extern "C"
 
     MOROBOX8_PUBLIC(void)
     morobox8_state_set(struct morobox8 *vm, enum morobox8_state state);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_load(struct morobox8 *vm, const char *cart);
 
     MOROBOX8_PUBLIC(enum morobox8_session_state)
     morobox8_netsessionstate(struct morobox8 *vm);

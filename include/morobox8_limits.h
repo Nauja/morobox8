@@ -13,6 +13,10 @@
 #define MOROBOX8_SPRITE_LAYER_SIZE 256
 #define MOROBOX8_CHUNK_NAME_SIZE 256
 #define MOROBOX8_FILENAME_SIZE 256
+#define MOROBOX8_MAGICCODE_SIZE 4
+#define MOROBOX8_CARTNAME_SIZE 16
+#define MOROBOX8_MAX_CHUNKS 256
+#define MOROBOX8_CART_MAX_SIZE (sizeof(morobox8_cart) + (MOROBOX8_MAX_CHUNKS * sizeof(morobox8_cart_code_chunk)))
 /* Number of sprites in a tileset. */
 #define MOROBOX8_TILESET_WIDTH 16
 #define MOROBOX8_TILESET_HEIGHT 16

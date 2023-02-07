@@ -258,11 +258,6 @@
         "console state")\
                                                         \
     macro(                           \
-        load,                      \
-        MOROBOX8_API_BIOS,                                                                         \
-        "load a cart")\
-                                                        \
-    macro(                           \
         netsessionstate,                      \
         MOROBOX8_API_BIOS,                                                                         \
         "get session state")\

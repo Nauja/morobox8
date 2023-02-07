@@ -131,6 +131,11 @@
 /* #undef MOROBOX8_HOOK */
 #endif
 
+#ifndef MOROBOX8_PACKER
+/* Builds with packer. */
+#define MOROBOX8_PACKER 1
+#endif
+
 #if !defined(__WINDOWS__) && (defined(WIN32) || defined(WIN64) || defined(_MSC_VER) || defined(_WIN32))
 #define __WINDOWS__
 #endif

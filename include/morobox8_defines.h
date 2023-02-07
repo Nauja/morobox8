@@ -8,6 +8,10 @@
 #define MOROBOX8_FALSE 0
 #define MOROBOX8_COMMA ,
 
+#ifndef min
+#define min(a, b) (a < b ? a : b)
+#endif
+
 #define MOROBOX8_RETFALSE_DEFAULT(val) return MOROBOX8_FALSE;
 #define MOROBOX8_RETZERO_DEFAULT(val) return 0;
 #define MOROBOX8_RETNULL_DEFAULT(val) return NULL;

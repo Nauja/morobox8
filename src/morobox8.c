@@ -1,10 +1,10 @@
 #include "morobox8.h"
 #include "morobox8_defines.h"
 #include "morobox8_hooks.h"
-#include "filesystem/filesystem_hooks.h"
-#include "filesystem/filesystem.h"
+#include "cart/cartreader.h"
+#include "system/storage_hooks.h"
 #include "network/session_hooks.h"
-#include "tool/pack.h"
+#include "tool/packer.h"
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -52,6 +52,7 @@ typedef struct morobox8_cart_code morobox8_cart_code;
 typedef struct morobox8_cart_sprite morobox8_cart_sprite;
 typedef struct morobox8_cart_header morobox8_cart_header;
 typedef struct morobox8_cart_data morobox8_cart_data;
+typedef struct morobox8_file morobox8_file;
 typedef struct morobox8 morobox8;
 
 MOROBOX8_PUBLIC(morobox8_api *)
@@ -150,6 +151,16 @@ MOROBOX8_PUBLIC(void)
 morobox8_set_vram(struct morobox8 *vm, void *buffer)
 {
     vm->ram.vram = buffer;
+}
+
+static morobox8_file *morobox8_get_selected_cart_file(morobox8 *vm)
+{
+    if (vm->cart_select == &vm->cart)
+    {
+        return vm->cart_file;
+    }
+
+    return vm->bios_file;
 }
 
 static morobox8 *morobox8_load_any(morobox8 *vm, morobox8_api *api, morobox8_cart_data *dst, morobox8_cart_data *src, morobox8_api_type type)
@@ -253,8 +264,7 @@ static morobox8_cart_tileset *morobox8_selected_tileset(struct morobox8 *vm)
 MOROBOX8_PUBLIC(void)
 morobox8_font(morobox8 *vm, const char *name, size_t size)
 {
-    assert(vm->cart_select);
-    morobox8_fs_read_cart_chunk(name, size, &vm->cart_select->font, sizeof(morobox8_cart_tileset));
+    morobox8_cartreader_find_tileset(vm, morobox8_get_selected_cart_file(vm), &vm->cart_select->font, name, size);
 }
 
 MOROBOX8_PUBLIC(void)
@@ -454,8 +464,7 @@ morobox8_rectfill(morobox8 *vm, morobox8_s32 x0, morobox8_s32 y0, morobox8_s32 x
 MOROBOX8_PUBLIC(void)
 morobox8_tileset(morobox8 *vm, const char *name, size_t size)
 {
-    assert(vm->cart_select);
-    morobox8_fs_read_cart_chunk(name, size, &vm->cart_select->tileset, sizeof(morobox8_cart_tileset));
+    morobox8_cartreader_find_tileset(vm, morobox8_get_selected_cart_file(vm), &vm->cart_select->tileset, name, size);
 }
 
 MOROBOX8_PUBLIC(void)
@@ -481,8 +490,7 @@ morobox8_paltset(morobox8 *vm, morobox8_u8 col, morobox8_s32 t)
 MOROBOX8_PUBLIC(void)
 morobox8_code(morobox8 *vm, const char *name, size_t size)
 {
-    assert(vm->cart_select);
-    morobox8_fs_read_cart_chunk(name, size, &vm->cart_select->code, sizeof(morobox8_cart_code));
+    morobox8_cartreader_find_code(vm, morobox8_get_selected_cart_file(vm), &vm->cart_select->code, name, size);
 }
 
 MOROBOX8_PUBLIC(morobox8_u8)
@@ -595,19 +603,6 @@ morobox8_state_set(morobox8 *vm, morobox8_state state)
         break;
     }
     vm->state = state;
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_load(morobox8 *vm, const char *cart)
-{
-#ifdef MOROBOX8_FILESYSTEM
-    morobox8_cart c;
-    morobox8_pack(cart, &c);
-
-    morobox8_load_cart(vm, &c.data);
-#else
-    morobox8_printf("load not supported on this platform\n");
-#endif
 }
 
 MOROBOX8_PUBLIC(morobox8_session_state)

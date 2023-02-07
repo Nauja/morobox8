@@ -661,23 +661,6 @@ static int morobox8_lua_api_state(lua_State *lua)
     return 0;
 }
 
-static int morobox8_lua_api_load(lua_State *lua)
-{
-    int top = lua_gettop(lua);
-    morobox8 *vm = morobox8_lua_get_vm(lua);
-
-    if (top == 1)
-    {
-        size_t size;
-        morobox8_load(vm, morobox8_lua_get_string(lua, 1, &size));
-        return 0;
-    }
-    else
-        morobox8_lua_error(lua, "invalid parameters, load(cart)\n");
-
-    return 0;
-}
-
 static int morobox8_lua_api_netsessionstate(lua_State *lua)
 {
     int top = lua_gettop(lua);
