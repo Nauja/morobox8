@@ -1,0 +1,25 @@
+Header:
+- Magic Code: MB8
+- Name: test
+- Size: 65536 bytes (3% of total space)
+- Chunks: 3
+- Code Chunk: 0
+- Tileset Chunk: 1
+- Font Chunk: 2
+- Colors: 6
+
+Code Chunk:
+- Id: 0
+- Name: main.lua
+- Size: 37 bytes (0% of total space)
+- Address: 0x10000
+
+Tileset Chunk:
+- Id: 1
+- Name: tileset.png
+- Address: 0x14000
+
+Tileset Chunk:
+- Id: 2
+- Name: font.png
+- Address: 0x18500

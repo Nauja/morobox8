@@ -49,6 +49,7 @@ static void morobox8_packer_index_png(morobox8_packer *packer, morobox8_cart_til
     morobox8_u8 *pdata;
     morobox8_cart_sprite *sprite = &tileset->sprites[0];
     morobox8_u8 *pixels;
+    int color;
     for (size_t tile_j = 0; tile_j < height; ++tile_j)
     {
         for (size_t tile_i = 0; tile_i < width; ++tile_i)
@@ -60,13 +61,14 @@ static void morobox8_packer_index_png(morobox8_packer *packer, morobox8_cart_til
             {
                 for (morobox8_u8 i = 0; i < MOROBOX8_SPRITE_WIDTH; ++i)
                 {
-                    *pixels = morobox8_packer_sprite_add_color(
+                    color = morobox8_packer_sprite_add_color(
                         packer,
                         sprite,
                         pdata[0],
                         pdata[1],
                         pdata[2]);
                     pdata += 4;
+                    *pixels = color == -1 ? 0 : (morobox8_u8)color;
                     ++pixels;
                 }
                 pdata += (width * 4) - MOROBOX8_SPRITE_WIDTH * 4;
@@ -96,23 +98,23 @@ static void morobox8_packer_png_from_memory(png_structp png, png_bytep buf, size
     pio->size -= read;
 }
 
-static morobox8_packer *morobox8_packer_load_png(morobox8_packer *packer, morobox8_cart_tileset_chunk *chunk, const char *name, const void *buf, size_t size)
+static morobox8_u8 morobox8_packer_load_png(morobox8_packer *packer, morobox8_cart_tileset_chunk *chunk, const char *name, const void *buf, size_t size)
 {
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png)
     {
-        return NULL;
+        return MOROBOX8_CHUNK_INVALID;
     }
 
     png_infop info = png_create_info_struct(png);
     if (!info)
     {
-        return NULL;
+        return MOROBOX8_CHUNK_INVALID;
     }
 
     if (setjmp(png_jmpbuf(png)))
     {
-        return NULL;
+        return MOROBOX8_CHUNK_INVALID;
     }
 
     morobox8_packer_pio pio = {
@@ -177,32 +179,21 @@ static morobox8_packer *morobox8_packer_load_png(morobox8_packer *packer, morobo
         tiles_h = MOROBOX8_TILESET_HEIGHT;
     }
 
-    morobox8_packer_add_tileset_chunk(packer, chunk);
-
-    morobox8_printf("Found %ux%u sprites\n", tiles_w, tiles_h);
-    size_t num_colors = morobox8_packer_get_num_colors(packer);
+    morobox8_u8 result = morobox8_packer_add_tileset_chunk(packer, chunk);
     morobox8_packer_index_png(packer, &chunk->tileset, data, tiles_w, tiles_h);
-    morobox8_printf("Indexed %d new colors, total %d\n", morobox8_packer_get_num_colors(packer) - num_colors, morobox8_packer_get_num_colors(packer));
 
     png_destroy_read_struct(&png, &info, NULL);
     morobox8_free(data);
-    return packer;
+    return result;
 }
 
-MOROBOX8_PUBLIC(int)
+MOROBOX8_PUBLIC(morobox8_u8)
 morobox8_packer_add_png(morobox8_packer *packer, const char *name, const void *buf, size_t size)
 {
     morobox8_cart_tileset_chunk chunk;
     morobox8_cart_tileset_chunk_init(&chunk);
-    snprintf(&chunk.base.name[0], MOROBOX8_CHUNK_NAME_SIZE, "%s", name);
-    chunk.base.type = MOROBOX8_CART_CHUNK_TILESET;
-    if (!morobox8_packer_load_png(packer, &chunk, name, buf, size))
-    {
-        morobox8_printf("Failed to load PNG %s\n", name);
-        return -1;
-    }
-
-    return morobox8_packer_add_tileset_chunk(packer, &chunk);
+    snprintf(chunk.base.name, MOROBOX8_CHUNK_NAME_SIZE, "%s", name);
+    return morobox8_packer_load_png(packer, &chunk, name, buf, size);
 }
 
 #endif

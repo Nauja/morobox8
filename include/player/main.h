@@ -9,9 +9,10 @@ extern "C"
 
 // clang-format off
 #define MOROBOX8_CMD_LIST(macro) \
+    macro(info, INFO) \
     macro(pack, PACK) \
-    macro(unpack, UNPACK) \
-    macro(run, RUN)
+    macro(run, RUN) \
+    macro(unpack, UNPACK)
     // clang-format on
 
 #define MOROBOX8_CMD_DEF(name, ...) \

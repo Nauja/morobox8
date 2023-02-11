@@ -1,14 +1,14 @@
 #pragma once
+#include "morobox8_config.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-    enum morobox8_api_type
+    struct morobox8_storage
     {
-        MOROBOX8_API_BIOS = 0x1,
-        MOROBOX8_API_GAME = 0x2
+        const char *root;
     };
 
 #ifdef __cplusplus

@@ -40,64 +40,83 @@ extern "C"
         /* Displaying system menus. */
         MOROBOX8_STATE_BIOS = 0,
         /* Displaying game. */
-        MOROBOX8_STATE_CART,
+        MOROBOX8_STATE_GAME,
         /* Displaying system overlay over game. */
         MOROBOX8_STATE_OVERLAY
     };
 
-    struct morobox8
+    enum morobox8_thread
     {
+        MOROBOX8_THREAD_MAIN = 0,
+        MOROBOX8_THREAD_BIOS,
+        MOROBOX8_THREAD_GAME
+    };
+
+    /* Cart loaded in ram. */
+    struct morobox8_ram_cart
+    {
+        /* Pointer to cart file. */
+        struct morobox8_file *file;
+        /* Loaded palette. */
+        struct morobox8_cart_palette palette;
+        /* Loaded tileset. */
+        struct morobox8_cart_tileset tileset;
+        /* Loaded font. */
+        struct morobox8_cart_tileset font;
+        /* Loaded code.. */
+        struct morobox8_api api;
+        /* If the cart requested loading a code bank. */
+        morobox8_u8 load_code;
+        /* Next code bank requested. */
+        morobox8_u8 next_code;
+    };
+
+    /* VM ram. */
+    struct morobox8_ram
+    {
+        /* Networked ram. */
+        morobox8_u8 netram[MOROBOX8_NETRAM_SIZE];
+        /* Stack pointer for netram. */
+        morobox8_netram_sp netram_sp;
+        /* Packet ram. */
+        morobox8_u8 pktram[MOROBOX8_PKTRAM_SIZE];
+        /* Stack pointer for pktram. */
+        morobox8_pktram_sp pktram_sp;
+        /* Draw color. */
+        morobox8_u8 color;
+        /* Delta time. */
+        float dt;
         struct
         {
-            /* Pointer to vram. */
-            void *vram;
-            /* Networked ram. */
-            morobox8_u8 netram[MOROBOX8_NETRAM_SIZE];
-            /* Stack pointer for netram. */
-            morobox8_netram_sp netram_sp;
-            /* Packet ram. */
-            morobox8_u8 pktram[MOROBOX8_PKTRAM_SIZE];
-            /* Stack pointer for pktram. */
-            morobox8_pktram_sp pktram_sp;
-            /* Draw color. */
-            morobox8_u8 color;
-            /* Delta time. */
-            float dt;
-            struct
-            {
-                int left : 1;
-                int right : 1;
-                int up : 1;
-                int down : 1;
-                int a : 1;
-                int start : 1;
-                int reserved : 2;
-            } buttons[2];
-            /* If a code bank must be loaded for bios. */
-            morobox8_u8 bios_load_code;
-            /* Next code bank to load for bios. */
-            morobox8_u8 bios_next_code;
-            /* If a code bank must be loaded for cart. */
-            morobox8_u8 cart_load_code;
-            /* Next code bank to load for cart. */
-            morobox8_u8 cart_next_code;
-        } ram;
+            int left : 1;
+            int right : 1;
+            int up : 1;
+            int down : 1;
+            int a : 1;
+            int start : 1;
+            int reserved : 2;
+        } buttons[2];
+    };
+
+    struct morobox8
+    {
+        /* Pointer to vram. */
+        void *vram;
+        /* VM ram. */
+        struct morobox8_ram ram;
         /* Console state. */
         enum morobox8_state state;
-        /* API used for the bios only. */
-        struct morobox8_api bios_api;
-        /* API used for the cart. */
-        struct morobox8_api cart_api;
-        /* Bios data. */
-        struct morobox8_cart_data bios;
-        /* Pointer to bios file. */
-        struct morobox8_file *bios_file;
-        /* Cart data. */
-        struct morobox8_cart_data cart;
-        /* Pointer to cart file. */
-        struct morobox8_file *cart_file;
-        /* Pointer to bios or cart. */
-        struct morobox8_cart_data *cart_select;
+        /* Bios loaded in ram. */
+        struct morobox8_ram_cart bios;
+        /* Game loaded in ram. */
+        struct morobox8_ram_cart game;
+        /* Currently selected cart. */
+        struct morobox8_ram_cart *select_cart;
+        /* Request to reset the vm. */
+        int request_reset : 1;
+        /* Current thread. */
+        enum morobox8_thread thread;
+        /* Game session. */
         struct morobox8_session *session;
         /* Pointer to the external reader. */
         struct morobox8_reader *reader;
@@ -138,18 +157,6 @@ extern "C"
 
     MOROBOX8_PUBLIC(void)
     morobox8_set_vram(struct morobox8 *vm, void *buffer);
-
-    MOROBOX8_PUBLIC(struct morobox8 *)
-    morobox8_load_bios(struct morobox8 *vm, struct morobox8_cart_data *cart);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_unload_bios(struct morobox8 *vm);
-
-    MOROBOX8_PUBLIC(struct morobox8 *)
-    morobox8_load_cart(struct morobox8 *vm, struct morobox8_cart_data *cart);
-
-    MOROBOX8_PUBLIC(void)
-    morobox8_unload_cart(struct morobox8 *vm);
 
     MOROBOX8_PUBLIC(void)
     morobox8_tick(struct morobox8 *vm, float dt);
@@ -246,6 +253,12 @@ extern "C"
 
     MOROBOX8_PUBLIC(void)
     morobox8_state_set(struct morobox8 *vm, enum morobox8_state state);
+
+    MOROBOX8_PUBLIC(void)
+    morobox8_reset(struct morobox8 *vm);
+
+    MOROBOX8_PUBLIC(void)
+    morobox8_load(struct morobox8 *vm, const char *name, size_t size);
 
     MOROBOX8_PUBLIC(enum morobox8_session_state)
     morobox8_netsessionstate(struct morobox8 *vm);

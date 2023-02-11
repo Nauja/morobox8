@@ -661,6 +661,47 @@ static int morobox8_lua_api_state(lua_State *lua)
     return 0;
 }
 
+static int morobox8_lua_api_reset(lua_State *lua)
+{
+    int top = lua_gettop(lua);
+    morobox8 *vm = morobox8_lua_get_vm(lua);
+
+    if (top == 0)
+    {
+        morobox8_reset(vm);
+        return 0;
+    }
+    else
+        morobox8_lua_error(lua, "invalid parameters, reset()\n");
+
+    return 0;
+}
+
+static int morobox8_lua_api_load(lua_State *lua)
+{
+    int top = lua_gettop(lua);
+    morobox8 *vm = morobox8_lua_get_vm(lua);
+
+    if (top < 2)
+    {
+        if (top == 0)
+        {
+            morobox8_load(vm, NULL, 0);
+            return 0;
+        }
+
+        size_t size;
+        const char *s = morobox8_lua_get_string(lua, 1, &size);
+
+        morobox8_load(vm, s, size);
+        return 0;
+    }
+    else
+        morobox8_lua_error(lua, "invalid parameters, load([name])\n");
+
+    return 0;
+}
+
 static int morobox8_lua_api_netsessionstate(lua_State *lua)
 {
     int top = lua_gettop(lua);
@@ -876,9 +917,9 @@ morobox8_lua_api_init(morobox8_api *api, morobox8 *vm, morobox8_api_type type)
 const struct morobox8_api_config morobox8_lua_api_config =
     {
         .lang = MOROBOX8_API_LANG_LUA,
-        .main = "main.lua",
-        .main_size = 8,
-        .ext = ".lua",
-        .ext_size = 4};
+        .main = MOROBOX8_LUA_MAIN,
+        .main_size = MOROBOX8_LUA_MAIN_SIZE,
+        .ext = MOROBOX8_LUA_EXT,
+        .ext_size = MOROBOX8_LUA_EXT_SIZE};
 
 #endif

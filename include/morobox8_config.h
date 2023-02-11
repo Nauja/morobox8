@@ -39,6 +39,11 @@
 #define HAVE_STDARG_H 1
 #endif
 
+/* Define to 1 if you have the <assert.h> header file. */
+#ifndef HAVE_ASSERT_H
+#define HAVE_ASSERT_H 1
+#endif
+
 /* Define to 1 if you have the <iostream.h> header file. */
 #ifndef HAVE_IOSTREAM_H
 /* #undef HAVE_IOSTREAM_H */
@@ -134,6 +139,11 @@
 #ifndef MOROBOX8_PACKER
 /* Builds with packer. */
 #define MOROBOX8_PACKER 1
+#endif
+
+#ifndef MOROBOX8_INFO
+/* Builds with info. */
+#define MOROBOX8_INFO 1
 #endif
 
 #if !defined(__WINDOWS__) && (defined(WIN32) || defined(WIN64) || defined(_MSC_VER) || defined(_WIN32))

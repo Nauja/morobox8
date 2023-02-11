@@ -23,9 +23,9 @@ morobox8_js_api_init(morobox8_api *api, morobox8 *vm, morobox8_api_type type)
 const struct morobox8_api_config morobox8_js_api_config =
     {
         .lang = MOROBOX8_API_LANG_JS,
-        .main = "main.js",
-        .main_size = 7,
-        .ext = ".js",
-        .ext_size = 3};
+        .main = MOROBOX8_JS_MAIN,
+        .main_size = MOROBOX8_JS_MAIN_SIZE,
+        .ext = MOROBOX8_JS_EXT,
+        .ext_size = MOROBOX8_JS_EXT_SIZE};
 
 #endif

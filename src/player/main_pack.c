@@ -40,6 +40,8 @@ static int morobox8_parse_pack(morobox8_pack_args *args, int argc, char *argv[])
 static int morobox8_handle_pack(morobox8_pack_args *args)
 {
     char buf[MOROBOX8_FILENAME_SIZE];
+    memset(&buf[0], 0, MOROBOX8_FILENAME_SIZE);
+
     if (args->output)
     {
         memcpy(&buf[0], args->output, strlen(args->output));
@@ -51,7 +53,7 @@ static int morobox8_handle_pack(morobox8_pack_args *args)
     }
     printf("Write cart to %s\n", buf);
 
-    FILE *f = fopen(args->output, "w+");
+    FILE *f = fopen(buf, "w+");
     if (!f)
     {
         morobox8_printf("Can't write file\n");
@@ -60,6 +62,7 @@ static int morobox8_handle_pack(morobox8_pack_args *args)
 
     morobox8_packer *packer = morobox8_file_packer(f);
     morobox8_packer_add_dir(packer, args->target);
+    morobox8_packer_pack(packer);
     morobox8_packer_delete(packer);
     return MOROBOX8_TRUE;
 }

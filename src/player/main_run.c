@@ -1,7 +1,10 @@
 #include "player/main.h"
 #include "morobox8.h"
 #include "morobox8_hooks.h"
+#include "cart/cart.h"
 #include "tool/packer.h"
+#include "tool/unpacker.h"
+#include "player/fs_storage.h"
 
 #include "fs.h"
 #include "argparse.h"
@@ -11,6 +14,9 @@
 #endif
 
 typedef struct morobox8_cart morobox8_cart;
+typedef struct morobox8_packer morobox8_packer;
+typedef struct morobox8_reader morobox8_reader;
+typedef struct morobox8_storage morobox8_storage;
 typedef struct morobox8 morobox8;
 
 // clang-format off
@@ -46,24 +52,14 @@ static int morobox8_handle_run(morobox8_run_args *args)
     morobox8 vm;
     morobox8_init(&vm);
 
-    morobox8_cart cart;
-    if (fs_is_file(args->cart))
-    {
-        if (!morobox8_cart_load_file(&cart, args->cart))
-        {
-            return MOROBOX8_FALSE;
-        }
-    }
-    else if (!morobox8_cart_load_dir(&cart, args->cart))
-    {
-        return MOROBOX8_FALSE;
-    }
+    FILE *f = fopen(args->cart, "rb");
+    vm.reader = (morobox8_reader *)f;
 
-    morobox8_load_cart(&vm, &cart.data);
+    morobox8_storage storage = {
+        .root = ""};
+    vm.storage = &storage;
 
-    morobox8_cart_load_dir(&cart, "bios");
-    morobox8_load_bios(&vm, &cart.data);
-
+    morobox8_reset(&vm);
     return morobox8_run_player(&vm);
 }
 

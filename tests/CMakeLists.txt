@@ -33,32 +33,33 @@ message("CMOCKA_LIBRARY=${CMOCKA_LIBRARY}")
 
 # morobox8 tests
 set(_TESTS
-    test_morobox8
+    test_cart
+    test_unpacker
+    test_packer
 )
-
-include_directories(${CMOCKA_INCLUDE_DIR}
-                    ${LIBFS_INCLUDE_DIR}
-                    ${CMAKE_SOURCE_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${MOROBOX8_INCLUDE_DIR})
                     
 foreach(_TEST ${_TESTS})
     add_cmocka_test(morobox8-${_TEST}
-                    SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${_TEST}.c
+                    SOURCES ${MOROBOX8_TESTS_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/${_TEST}.c
                     COMPILE_OPTIONS
-                        ${DEFAULT_C_COMPILE_FLAGS}
+                        ${MOROBOX8_TESTS_COMPILE_FLAGS}
                         -DMORO8_WITH_CLI=OFF
-                    LINK_LIBRARIES ${CMOCKA_LIBRARY} ${LIBFS_LIBRARY} ${MOROBOX8_STATIC_LIB}
+                    LINK_LIBRARIES ${CMOCKA_LIBRARY} ${MOROBOX8_TESTS_LINKS}
     )
     
     target_include_directories(morobox8-${_TEST}
-        PRIVATE 
+        SYSTEM PRIVATE 
             ${CMAKE_BINARY_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMOCKA_INCLUDE_DIR}
             ${CMOCKA_BINARY_DIR}
-            ${LIBFS_BINARY_DIR}
-            ${MOROBOX8_INCLUDE_DIR})
+            ${MOROBOX8_TESTS_INCLUDE_DIRS})
     
     # Link cmocka and libfs
-    add_dependencies(morobox8-${_TEST} cmocka libfs)
+    add_dependencies(morobox8-${_TEST} cmocka libfs ${MOROBOX8_STATIC_LIB})
 
 endforeach()
+
+# Copy test files
+file(COPY data DESTINATION ${CMAKE_CURRENT_BINARY_DIR} FILE_PERMISSIONS OWNER_READ OWNER_WRITE)
+file(COPY expected DESTINATION ${CMAKE_CURRENT_BINARY_DIR} FILE_PERMISSIONS OWNER_READ OWNER_WRITE)

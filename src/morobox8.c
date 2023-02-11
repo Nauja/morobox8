@@ -3,6 +3,7 @@
 #include "morobox8_hooks.h"
 #include "cart/cartreader.h"
 #include "system/storage_hooks.h"
+#include "system/log_hooks.h"
 #include "network/session_hooks.h"
 #include "tool/packer.h"
 
@@ -52,6 +53,9 @@ typedef struct morobox8_cart_code morobox8_cart_code;
 typedef struct morobox8_cart_sprite morobox8_cart_sprite;
 typedef struct morobox8_cart_header morobox8_cart_header;
 typedef struct morobox8_cart_data morobox8_cart_data;
+typedef struct morobox8_cart_palette morobox8_cart_palette;
+typedef struct morobox8_ram_cart morobox8_ram_cart;
+typedef struct morobox8_ram morobox8_ram;
 typedef struct morobox8_file morobox8_file;
 typedef struct morobox8 morobox8;
 
@@ -124,8 +128,7 @@ morobox8_init(morobox8 *vm)
 MOROBOX8_PUBLIC(void)
 morobox8_delete(morobox8 *vm)
 {
-    morobox8_api_delete(&vm->cart_api);
-    morobox8_api_delete(&vm->bios_api);
+    morobox8_reset(vm);
     morobox8_free(vm);
 }
 
@@ -144,75 +147,57 @@ morobox8_sizeof(void)
 MOROBOX8_PUBLIC(void *)
 morobox8_get_vram(struct morobox8 *vm)
 {
-    return vm->ram.vram;
+    return vm->vram;
 }
 
 MOROBOX8_PUBLIC(void)
 morobox8_set_vram(struct morobox8 *vm, void *buffer)
 {
-    vm->ram.vram = buffer;
+    vm->vram = buffer;
 }
 
 static morobox8_file *morobox8_get_selected_cart_file(morobox8 *vm)
 {
-    if (vm->cart_select == &vm->cart)
+    return vm->select_cart ? vm->select_cart->file : NULL;
+}
+
+static inline void morobox8_set_pixel_rgb(morobox8 *vm, morobox8_s32 x, morobox8_s32 y, morobox8_u8 r, morobox8_u8 g, morobox8_u8 b)
+{
+#if MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGB565
+    morobox8_u16 c16 = ((r & 0xf8) << 8) |
+                       ((g & 0xfc) << 3) |
+                       ((b & 0xf8) >> 3);
+
+    ((morobox8_u16 *)vm->vram)[x + y * MOROBOX8_SCREEN_WIDTH] = __builtin_bswap16(c16);
+#elif MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGBA
+    morobox8_u32 c32 = ((r & 0xff) << 24) |
+                       ((g & 0xff) << 16) |
+                       ((b & 0xff) >> 8) |
+                       0xFF;
+
+    ((morobox8_u32 *)vm->vram)[x + y * MOROBOX8_SCREEN_WIDTH] = __builtin_bswap32(c32);
+#endif
+}
+
+static void morobox8_set_pixel(morobox8 *vm, morobox8_s32 x, morobox8_s32 y, morobox8_u8 value, morobox8_u8 *col)
+{
+    assert(vm->select_cart);
+    if (vm->select_cart->palette.colors[value].t)
     {
-        return vm->cart_file;
+        return;
     }
 
-    return vm->bios_file;
-}
-
-static morobox8 *morobox8_load_any(morobox8 *vm, morobox8_api *api, morobox8_cart_data *dst, morobox8_cart_data *src, morobox8_api_type type)
-{
-    memcpy(dst, src, sizeof(morobox8_cart_data));
-    vm->cart_select = dst;
-
-    if (!morobox8_api_init(api, vm, dst->code.lang, type))
+    if (col)
     {
-        return NULL;
+        value = *col;
+        if (vm->select_cart->palette.colors[value].t)
+        {
+            return;
+        }
     }
 
-    if (!morobox8_api_load_string(api, &dst->code.text[0], MOROBOX8_CART_CODE_SIZE))
-    {
-        if (dst == &vm->cart)
-            morobox8_printf("failed loads");
-        return NULL;
-    }
-
-    if (dst == &vm->cart)
-        morobox8_printf("api init");
-    return vm;
-}
-
-static void morobox8_unload_any(morobox8_api *api, morobox8_cart_data *cart)
-{
-    morobox8_api_delete(api);
-    memset(cart, 0, sizeof(morobox8_cart_data));
-}
-
-MOROBOX8_PUBLIC(morobox8 *)
-morobox8_load_bios(morobox8 *vm, morobox8_cart_data *cart)
-{
-    return morobox8_load_any(vm, &vm->bios_api, &vm->bios, cart, MOROBOX8_API_CART | MOROBOX8_API_BIOS);
-}
-
-MOROBOX8_PUBLIC(morobox8 *)
-morobox8_load_cart(morobox8 *vm, morobox8_cart_data *cart)
-{
-    return morobox8_load_any(vm, &vm->cart_api, &vm->cart, cart, MOROBOX8_API_CART);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_unload_bios(morobox8 *vm)
-{
-    morobox8_unload_any(&vm->bios_api, &vm->bios);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_unload_cart(morobox8 *vm)
-{
-    morobox8_unload_any(&vm->cart_api, &vm->cart);
+    struct morobox8_cart_color *c = &vm->select_cart->palette.colors[value];
+    morobox8_set_pixel_rgb(vm, x, y, c->r, c->g, c->b);
 }
 
 MOROBOX8_PUBLIC(void)
@@ -220,7 +205,7 @@ morobox8_tick(morobox8 *vm, float dt)
 {
     vm->ram.dt = dt;
 
-    morobox8_session_state session_state = morobox8_session_get_state(vm->session);
+    morobox8_session_state session_state = morobox8_netsessionstate(vm);
     if (session_state == MOROBOX8_SESSION_JOINED)
     {
         vm->ram.netram_sp = morobox8_session_receive(
@@ -230,15 +215,24 @@ morobox8_tick(morobox8 *vm, float dt)
     }
 
     /* Only tick cart when in those states */
-    if (vm->state == MOROBOX8_STATE_CART || vm->state == MOROBOX8_STATE_OVERLAY)
+    if (1 || vm->state == MOROBOX8_STATE_GAME || vm->state == MOROBOX8_STATE_OVERLAY)
     {
-        vm->cart_select = &vm->cart;
-        morobox8_api_tick(&vm->cart_api);
+        vm->thread = MOROBOX8_THREAD_GAME;
+        vm->select_cart = &vm->game;
+        morobox8_api_tick(&vm->game.api);
     }
 
     /* Always tick bios */
-    vm->cart_select = &vm->bios;
-    morobox8_api_tick(&vm->bios_api);
+    vm->thread = MOROBOX8_THREAD_BIOS;
+    vm->select_cart = &vm->bios;
+    morobox8_api_tick(&vm->bios.api);
+
+    vm->thread = MOROBOX8_THREAD_MAIN;
+    if (vm->request_reset)
+    {
+        morobox8_reset(vm);
+        return;
+    }
 
     if (session_state == MOROBOX8_SESSION_HOSTING)
     {
@@ -251,20 +245,20 @@ morobox8_tick(morobox8 *vm, float dt)
 
 static morobox8_cart_tileset *morobox8_selected_font(struct morobox8 *vm)
 {
-    assert(vm->cart_select);
-    return &vm->cart_select->font;
+    assert(vm->select_cart);
+    return &vm->select_cart->font;
 }
 
 static morobox8_cart_tileset *morobox8_selected_tileset(struct morobox8 *vm)
 {
-    assert(vm->cart_select);
-    return &vm->cart_select->tileset;
+    assert(vm->select_cart);
+    return &vm->select_cart->tileset;
 }
 
 MOROBOX8_PUBLIC(void)
 morobox8_font(morobox8 *vm, const char *name, size_t size)
 {
-    morobox8_cartreader_find_tileset(vm, morobox8_get_selected_cart_file(vm), &vm->cart_select->font, name, size);
+    morobox8_cartreader_find_tileset(vm, morobox8_get_selected_cart_file(vm), &vm->select_cart->font, name, size);
 }
 
 MOROBOX8_PUBLIC(void)
@@ -274,41 +268,6 @@ morobox8_print(morobox8 *vm, const char *buf, size_t size, morobox8_s32 x, morob
     {
         morobox8_printc(vm, buf[i], x + i * MOROBOX8_SPRITE_WIDTH, y, col);
     }
-}
-
-static void morobox8_set_pixel(morobox8 *vm, morobox8_s32 x, morobox8_s32 y, morobox8_u8 value, morobox8_u8 *col)
-{
-    assert(vm->cart_select);
-    if (vm->cart_select->palette[value].t)
-    {
-        return;
-    }
-
-    if (col)
-    {
-        value = *col;
-        if (vm->cart_select->palette[value].t)
-        {
-            return;
-        }
-    }
-
-    struct morobox8_cart_color *c = &vm->cart_select->palette[value];
-
-#if MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGB565
-    morobox8_u16 c16 = ((c->r & 0xf8) << 8) |
-                       ((c->g & 0xfc) << 3) |
-                       ((c->b & 0xf8) >> 3);
-
-    ((morobox8_u16 *)vm->ram.vram)[x + y * MOROBOX8_SCREEN_WIDTH] = __builtin_bswap16(c16);
-#elif MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGBA
-    morobox8_u32 c32 = ((c->r & 0xf8) << 24) |
-                       ((c->g & 0xfc) << 16) |
-                       ((c->b & 0xf8) >> 8) |
-                       0xFF;
-
-    ((morobox8_u32 *)vm->ram.vram)[x + y * MOROBOX8_SCREEN_WIDTH] = c32;
-#endif
 }
 
 static void morobox8_draw_sprite(morobox8 *vm, morobox8_cart_tileset *tileset, morobox8_u8 id, morobox8_s32 x, morobox8_s32 y, morobox8_u8 *col)
@@ -389,7 +348,7 @@ morobox8_cos(struct morobox8 *vm, float val)
 MOROBOX8_PUBLIC(void)
 morobox8_cls(morobox8 *vm)
 {
-    memset(vm->ram.vram, 0, MOROBOX8_VRAM_SIZE);
+    memset(vm->vram, 0, MOROBOX8_VRAM_SIZE);
 }
 
 MOROBOX8_PUBLIC(morobox8_u8)
@@ -464,7 +423,7 @@ morobox8_rectfill(morobox8 *vm, morobox8_s32 x0, morobox8_s32 y0, morobox8_s32 x
 MOROBOX8_PUBLIC(void)
 morobox8_tileset(morobox8 *vm, const char *name, size_t size)
 {
-    morobox8_cartreader_find_tileset(vm, morobox8_get_selected_cart_file(vm), &vm->cart_select->tileset, name, size);
+    morobox8_cartreader_find_tileset(vm, morobox8_get_selected_cart_file(vm), &vm->select_cart->tileset, name, size);
 }
 
 MOROBOX8_PUBLIC(void)
@@ -476,33 +435,34 @@ morobox8_spr(morobox8 *vm, morobox8_u8 id, morobox8_s32 x, morobox8_s32 y, morob
 MOROBOX8_PUBLIC(morobox8_s32)
 morobox8_paltget(morobox8 *vm, morobox8_u8 col)
 {
-    assert(vm->cart_select);
-    return vm->cart_select->palette[col].t;
+    assert(vm->select_cart);
+    return vm->select_cart->palette.colors[col].t;
 }
 
 MOROBOX8_PUBLIC(void)
 morobox8_paltset(morobox8 *vm, morobox8_u8 col, morobox8_s32 t)
 {
-    assert(vm->cart_select);
-    vm->cart_select->palette[col].t = ((morobox8_u8)t != 0);
+    assert(vm->select_cart);
+    vm->select_cart->palette.colors[col].t = ((morobox8_u8)t != 0);
 }
 
 MOROBOX8_PUBLIC(void)
 morobox8_code(morobox8 *vm, const char *name, size_t size)
 {
-    morobox8_cartreader_find_code(vm, morobox8_get_selected_cart_file(vm), &vm->cart_select->code, name, size);
+    /*assert(vm->select_cart);
+    morobox8_cartreader_find_code(vm, morobox8_get_selected_cart_file(vm), &vm->select_cart->code, name, size);*/
 }
 
 MOROBOX8_PUBLIC(morobox8_u8)
 morobox8_peek(morobox8 *vm, morobox8_u16 address)
 {
-    return ((morobox8_u8 *)&vm->ram.vram)[address];
+    return ((morobox8_u8 *)&vm->vram)[address];
 }
 
 MOROBOX8_PUBLIC(void)
 morobox8_poke(morobox8 *vm, morobox8_u16 address, morobox8_u8 value)
 {
-    ((morobox8_u8 *)&vm->ram.vram)[address] = value;
+    ((morobox8_u8 *)&vm->vram)[address] = value;
 }
 
 MOROBOX8_PUBLIC(morobox8_u8)
@@ -514,8 +474,8 @@ morobox8_pget(struct morobox8 *vm, morobox8_s32 x, morobox8_s32 y)
 MOROBOX8_PUBLIC(void)
 morobox8_pset(morobox8 *vm, morobox8_s32 x, morobox8_s32 y, morobox8_u8 value)
 {
-    assert(vm->cart_select);
-    if (vm->cart_select->palette[value].t)
+    assert(vm->select_cart);
+    if (vm->select_cart->palette.colors[value].t)
     {
         return;
     }
@@ -593,7 +553,7 @@ morobox8_state_set(morobox8 *vm, morobox8_state state)
     case MOROBOX8_STATE_BIOS:
         morobox8_printf("state BIOS\n");
         break;
-    case MOROBOX8_STATE_CART:
+    case MOROBOX8_STATE_GAME:
         morobox8_printf("state CART\n");
         break;
     case MOROBOX8_STATE_OVERLAY:
@@ -603,6 +563,108 @@ morobox8_state_set(morobox8 *vm, morobox8_state state)
         break;
     }
     vm->state = state;
+}
+
+static void morobox8_reset_cart(morobox8 *vm, morobox8_ram_cart *cart)
+{
+    // Close the file opened to read the cart if any
+    morobox8_storage_close(vm->storage, cart->file);
+    // Delete the API and loaded code
+    morobox8_api_delete(&cart->api);
+    // Clear all the RAM
+    memset(cart, 0, sizeof(morobox8_ram_cart));
+}
+
+static int morobox8_load_cart(morobox8 *vm, morobox8_ram_cart *cart, const char *path, size_t size)
+{
+    // Close old file
+    morobox8_storage_close(vm->storage, cart->file);
+    cart->file = NULL;
+
+    // Open new file
+    if (path)
+    {
+        log_debug("Load cart from file %.*s", size, path);
+        assert(vm->storage);
+        cart->file = morobox8_storage_open(vm->storage, path, size, "r");
+        if (!cart->file)
+        {
+            log_error("File not found");
+            return MOROBOX8_FALSE;
+        }
+    }
+    else
+    {
+        log_debug("Load cart from cart reader");
+    }
+
+    morobox8_cart_code code;
+    size_t len = sizeof(morobox8_cart_code);
+    if (morobox8_cartreader_read(vm, cart->file, offsetof(morobox8_cart, data.code), &code, len) != len)
+    {
+        log_error("Failed read cart code");
+        morobox8_storage_close(vm->storage, cart->file);
+        cart->file = NULL;
+        return MOROBOX8_FALSE;
+    }
+
+    morobox8_ram_cart *old_select_cart = vm->select_cart;
+    vm->select_cart = cart;
+    if (!morobox8_api_init(&cart->api, vm, code.lang, cart == &vm->bios ? (MOROBOX8_API_BIOS | MOROBOX8_API_GAME) : MOROBOX8_API_GAME) ||
+        !morobox8_api_load_string(&cart->api, code.text, MOROBOX8_CART_CODE_SIZE))
+    {
+        log_error("Failed init cart API");
+        vm->select_cart = old_select_cart;
+        morobox8_storage_close(vm->storage, cart->file);
+        cart->file = NULL;
+        return MOROBOX8_FALSE;
+    }
+
+    vm->select_cart = old_select_cart;
+    morobox8_cartreader_read(vm, cart->file, offsetof(morobox8_cart, data.palette), &cart->palette, sizeof(morobox8_cart_palette));
+    morobox8_cartreader_read(vm, cart->file, offsetof(morobox8_cart, data.tileset), &cart->tileset, sizeof(morobox8_cart_tileset));
+    morobox8_cartreader_read(vm, cart->file, offsetof(morobox8_cart, data.font), &cart->font, sizeof(morobox8_cart_tileset));
+
+    log_debug("Cart loaded");
+    return MOROBOX8_TRUE;
+}
+
+static int morobox8_load_bios(morobox8 *vm)
+{
+    return morobox8_load_cart(vm, &vm->bios, MOROBOX8_BIOS_NAME, sizeof(MOROBOX8_BIOS_NAME));
+}
+
+MOROBOX8_PUBLIC(void)
+morobox8_reset(morobox8 *vm)
+{
+    if (vm->thread != MOROBOX8_THREAD_MAIN)
+    {
+        log_debug("Reset requested");
+        vm->request_reset = MOROBOX8_TRUE;
+        return;
+    }
+
+    log_debug("Reset VM");
+    // Clear the previous state
+    morobox8_reset_cart(vm, &vm->game);
+    morobox8_reset_cart(vm, &vm->bios);
+    memset(&vm->ram, 0, sizeof(morobox8_ram));
+    vm->state = MOROBOX8_STATE_BIOS;
+    vm->thread = MOROBOX8_THREAD_MAIN;
+    vm->select_cart = NULL;
+    vm->request_reset = MOROBOX8_FALSE;
+
+    // Reload bios
+    if (morobox8_load_bios(vm))
+    {
+        vm->select_cart = &vm->bios;
+    }
+}
+
+MOROBOX8_PUBLIC(void)
+morobox8_load(morobox8 *vm, const char *name, size_t size)
+{
+    morobox8_load_cart(vm, &vm->game, name, size);
 }
 
 MOROBOX8_PUBLIC(morobox8_session_state)

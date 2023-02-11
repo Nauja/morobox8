@@ -23,24 +23,14 @@ typedef struct morobox8_cart morobox8_cart;
 
 typedef enum morobox8_api_lang morobox8_api_lang;
 
-/* Configurations of the API. */
-static const morobox8_api_config *morobox8_api_configs[] = {
-#if MOROBOX8_LUA_API
-    &morobox8_lua_api_config,
-#endif
-#if MOROBOX8_JS_API
-    &morobox8_js_api_config,
-#endif
-    NULL};
-
-MOROBOX8_PUBLIC(int)
+MOROBOX8_PUBLIC(morobox8_u8)
 morobox8_packer_add_code(morobox8_packer *packer, const char *name, const void *buf, size_t size)
 {
     // Ensure the code can fit
     if (size > MOROBOX8_CART_CODE_SIZE)
     {
         morobox8_printf("Code size is too big\n");
-        return -1;
+        return MOROBOX8_CHUNK_INVALID;
     }
 
     // Name must contain the extension to determine language
@@ -48,7 +38,7 @@ morobox8_packer_add_code(morobox8_packer *packer, const char *name, const void *
     if (!pext)
     {
         morobox8_printf("Missing code extension %s\n", name);
-        return -1;
+        return MOROBOX8_CHUNK_INVALID;
     }
 
     size_t i = 0;
@@ -66,10 +56,12 @@ morobox8_packer_add_code(morobox8_packer *packer, const char *name, const void *
             memcpy(&chunk.code.text[0], buf, min(MOROBOX8_CART_CODE_SIZE, size));
             return morobox8_packer_add_code_chunk(packer, &chunk);
         }
+
+        ++i;
     }
 
     morobox8_printf("Unknown code extension %s\n", name);
-    return -1;
+    return MOROBOX8_CHUNK_INVALID;
 }
 
 #endif

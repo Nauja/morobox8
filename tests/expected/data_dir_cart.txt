@@ -1,0 +1,25 @@
+Header:
+- Magic Code: MB8
+- Name: cart
+- Size: 65536 bytes (3% of total space)
+- Chunks: 3
+- Code Chunk: 1
+- Tileset Chunk: 2
+- Font Chunk: 0
+- Colors: 6
+
+Tileset Chunk:
+- Id: 0
+- Name: font.png
+- Address: 0x10000
+
+Code Chunk:
+- Id: 1
+- Name: main.lua
+- Size: 37 bytes (0% of total space)
+- Address: 0x14500
+
+Tileset Chunk:
+- Id: 2
+- Name: tileset.png
+- Address: 0x18500

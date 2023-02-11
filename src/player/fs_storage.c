@@ -1,10 +1,12 @@
 /**
  * Storage implementation using libfs.
  */
+#include "player/fs_storage.h"
 #include "morobox8_config.h"
 #include "morobox8_defines.h"
 #include "morobox8_limits.h"
 #include "morobox8_types.h"
+#include "system/log_hooks.h"
 
 #include "fs.h"
 
@@ -13,11 +15,7 @@
 #endif
 
 typedef struct morobox8_file morobox8_file;
-
-typedef struct morobox8_storage
-{
-    int i;
-} morobox8_storage;
+typedef struct morobox8_storage morobox8_storage;
 
 MOROBOX8_PUBLIC(int)
 morobox8_storage_exist(morobox8_storage *storage, const char *name, size_t size)
@@ -30,6 +28,12 @@ morobox8_storage_exist(morobox8_storage *storage, const char *name, size_t size)
 MOROBOX8_PUBLIC(morobox8_file *)
 morobox8_storage_open(morobox8_storage *storage, const char *name, size_t size, const char *mode)
 {
+    log_debug("Open file %.*s", size, name);
+    if (!morobox8_storage_exist(storage, name, size))
+    {
+        log_warn("File %.*s not found", size, name);
+        return NULL;
+    }
     char buf[MOROBOX8_FILENAME_SIZE];
     snprintf(&buf[0], MOROBOX8_FILENAME_SIZE, "%.*s", size, name);
     return (morobox8_file *)fopen(buf, mode);
@@ -42,16 +46,15 @@ morobox8_storage_seek(morobox8_storage *storage, morobox8_file *file, morobox8_u
     return MOROBOX8_TRUE;
 }
 
-MOROBOX8_PUBLIC(int)
+MOROBOX8_PUBLIC(morobox8_u32)
 morobox8_storage_read(morobox8_storage *storage, morobox8_file *file, morobox8_u32 address, void *buf, morobox8_u32 size)
 {
     if (!morobox8_storage_seek(storage, file, address))
     {
-        return MOROBOX8_FALSE;
+        return 0;
     }
 
-    fread(buf, 1, size, (FILE *)file);
-    return MOROBOX8_TRUE;
+    return fread(buf, 1, size, (FILE *)file);
 }
 
 MOROBOX8_PUBLIC(int)

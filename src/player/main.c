@@ -1,3 +1,4 @@
+#include "player/main.h"
 #include "morobox8.h"
 #include "morobox8_hooks.h"
 #include "system/storage_hooks.h"
@@ -13,10 +14,6 @@
 #include <emscripten.h>
 #endif
 
-#if HAVE_STDIO_H
-#include <stdio.h>
-#endif
-
 static const char *const usage[] = {
     MOROBOX8_NAME " command [options]",
     NULL,
@@ -29,7 +26,7 @@ typedef struct command_struct
 } command_struct;
 
 #define MOROBOX8_CMD_DEF(name, NAME) \
-    {#name, parse_command_##name},
+    {#name, morobox8_main_##name},
 static command_struct commands[] = {
     MOROBOX8_CMD_LIST(MOROBOX8_CMD_DEF){NULL, NULL}};
 #undef MOROBOX8_CMD_DEF
@@ -64,46 +61,6 @@ static int morobox8_parse_args(int argc, char **argv)
 
     argparse_usage(&argparse);
     return -1;
-}
-
-/*static void dump(morobox8_cart *cart, enum morobox8_api_type type)
-{
-    if (type == MOROBOX8_API_CART)
-    {
-        printf("dump cart\n");
-    }
-    else
-    {
-        printf("dump bios\n");
-    }
-    printf("cart size %d\n", sizeof(struct morobox8_cart_data));
-    printf("cart num col %d\n", cart->data.num_colors);
-    printf("code size %d\n", sizeof(struct morobox8_cart_code));
-    memcpy(&cart->header.magic_code[0], (const void *)"MB8\n", 4);
-    FILE *f = fopen(type == MOROBOX8_API_CART ? "cart.txt" : "bios.txt", "wb+");
-    fwrite((void *)cart, 1, sizeof(struct morobox8_cart), f);
-    fclose(f);
-}*/
-
-MOROBOX8_PUBLIC(void *)
-morobox8_malloc(size_t size)
-{
-    return malloc(size);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_free(void *p)
-{
-    free(p);
-}
-
-MOROBOX8_PUBLIC(void)
-morobox8_printf(const char *fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-    vfprintf(stdout, fmt, args);
-    va_end(args);
 }
 
 int main(int argc, char **argv)

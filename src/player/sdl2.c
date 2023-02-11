@@ -25,14 +25,28 @@ typedef struct morobox8 morobox8;
 
 int morobox8_run_player(morobox8 *vm)
 {
-    morobox8_u16 frame_buffer[MOROBOX8_SCREEN_WIDTH * MOROBOX8_SCREEN_HEIGHT];
-    vm->ram.vram = (void *)&frame_buffer[0];
+#if MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGB565
+    morobox8_u16
+#elif MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGBA
+    morobox8_u32
+#endif
+        frame_buffer[MOROBOX8_SCREEN_WIDTH * MOROBOX8_SCREEN_HEIGHT];
+    vm->vram = (void *)&frame_buffer[0];
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     SDL_Window *window = SDL_CreateWindow(MOROBOX8_WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, MOROBOX8_SCREEN_WIDTH * MOROBOX8_WINDOW_SCALE, MOROBOX8_SCREEN_HEIGHT * MOROBOX8_WINDOW_SCALE, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGR565, SDL_TEXTUREACCESS_STREAMING, MOROBOX8_SCREEN_WIDTH, MOROBOX8_SCREEN_HEIGHT);
+    SDL_Texture *texture = SDL_CreateTexture(
+        renderer,
+#if MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGB565
+        SDL_PIXELFORMAT_BGR565,
+#elif MOROBOX8_COLOR_FORMAT == MOROBOX8_COLOR_RGBA
+        SDL_PIXELFORMAT_RGBA32,
+#endif
+        SDL_TEXTUREACCESS_STREAMING,
+        MOROBOX8_SCREEN_WIDTH,
+        MOROBOX8_SCREEN_HEIGHT);
 
     struct state state;
     state.quit = 1 == 0;

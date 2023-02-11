@@ -1,0 +1,14 @@
+Header:
+- Magic Code: MB8
+- Name: test
+- Size: 65536 bytes (3% of total space)
+- Chunks: 1
+- Code Chunk: empty
+- Tileset Chunk: empty
+- Font Chunk: 0
+- Colors: 1
+
+Tileset Chunk:
+- Id: 0
+- Name: font.png
+- Address: 0x10000

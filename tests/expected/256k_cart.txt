@@ -1,0 +1,85 @@
+Header:
+- Magic: MB8
+- Name: test
+- Size: 4297240 bytes (91% of total space)
+- Chunks: 255
+
+Code chunk:
+- Id: 0
+- Name: main.lua
+- Address: 0x1d218
+
+Code chunk:
+- Id: 1
+- Name: main.lua
+- Address: 0x21218
+
+Code chunk:
+- Id: 2
+- Name: main.lua
+- Address: 0x25218
+
+Code chunk:
+- Id: 3
+- Name: main.lua
+- Address: 0x29218
+
+Code chunk:
+- Id: 4
+- Name: main.lua
+- Address: 0x2d218
+
+Code chunk:
+- Id: 5
+- Name: main.lua
+- Address: 0x31218
+
+Code chunk:
+- Id: 6
+- Name: main.lua
+- Address: 0x35218
+
+Code chunk:
+- Id: 7
+- Name: main.lua
+- Address: 0x39218
+
+Code chunk:
+- Id: 8
+- Name: main.lua
+- Address: 0x3d218
+
+Code chunk:
+- Id: 9
+- Name: main.lua
+- Address: 0x41218
+
+Code chunk:
+- Id: 10
+- Name: main.lua
+- Address: 0x45218
+
+Code chunk:
+- Id: 11
+- Name: main.lua
+- Address: 0x49218
+
+Code chunk:
+- Id: 12
+- Name: main.lua
+- Address: 0x4d218
+
+Code chunk:
+- Id: 13
+- Name: main.lua
+- Address: 0x51218
+
+Code chunk:
+- Id: 14
+- Name: main.lua
+- Address: 0x55218
+
+Code chunk:
+- Id: 15
+- Name: main.lua
+- Address: 0x59

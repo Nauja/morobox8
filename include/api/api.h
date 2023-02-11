@@ -45,6 +45,9 @@ extern "C"
         size_t ext_size;
     };
 
+    /* Configurations of the different APIs. */
+    extern const struct morobox8_api_config *morobox8_api_configs[];
+
 #ifdef __cplusplus
 }
 #endif
